@@ -1,0 +1,204 @@
+
+.normal {
+  float:center;
+  color: black;
+  font-size: 20pt;
+  text-align:center:
+}
+
+.fancy{
+  color: red;
+  font-size: 40pt;
+}
+.resClass {
+  float: left;
+  width: 100%;
+}
+
+#searchRes {
+  float: left;
+  width: 47%;
+}
+
+#searchResPred {
+  float: left;
+  width: 47%;
+  margin-left: 2%;
+}
+
+#query {
+  width: 100%
+}
+
+
+#left{
+  width: 40%;
+  height: 100%;
+  float: left;
+}
+
+#right {
+  width: 400pt;
+  height: 80%;
+  float: left;
+  margin-left: 20pt;
+}
+
+#mapHeader {
+  margin-left: 10%;
+  width:100%;
+  height: 10%;
+}
+#map {
+  width: 100%;
+  height: 90%;
+}
+
+.resLineSubject{
+  background-color: #C2E0EF;
+  margin-top: 4pt;
+  cursor: pointer;
+  border-width: 3px;
+  border-style: solid;
+  border-color:transparent;
+}
+.resLinePredicate{
+  background-color: #00FF00;
+  margin-top: 4pt;
+  cursor: pointer;
+  border-width: 3px;
+  border-style: solid;
+  border-color:transparent;
+}
+
+.triple {
+  margin-top: 10pt;
+  width: 400pt;
+  height: 33pt;
+}
+
+.tripleDesc {
+  margin-top: 4pt;
+  width: 400pt;
+}
+
+.subject {
+  width: 27%;
+  height: 100%;
+  background-color: #C2E0EF;
+
+  float:left;
+  border-width: 3px;
+  border-style: solid;
+  border-color: #FFFFFF;
+}
+
+.property {
+  width: 28%;
+  height: 100%;
+  background-color: #00FF00;
+  float:left;
+  margin-left: 2%;
+  border-width: 3px;
+  border-style: solid;
+  border-color:#FFFFFF;
+}
+.object {
+  width: 28%;
+  height: 100%;
+  background-color: #C2E0EF;
+  float:left;
+  margin-left: 2%;
+  border-width: 3px;
+  border-style: solid;
+  border-color:transparent;
+}
+
+.stripes {
+  background: repeating-linear-gradient(
+    45deg,
+    #C2E0EF,
+    #C2E0EF 15px,
+    #00FF00 1px,
+    #00FF00 30px,
+    #C2E0EF 10px
+            );
+}
+
+.deleteTripleButton{
+  width: 8%;
+  height: 100%;
+  margin-left: 1%;
+  float:right;
+}
+
+.addTripleButton{
+  width: 50%;
+  height: 80%;
+  margin: auto;
+  display:block;
+}
+
+.variable{
+  background-color: #DDDDDD;
+  width: 20%;
+  height: 100%;
+  float:left;
+  margin-left: 2%
+}
+
+.wdName{
+  white-space:pre-wrap
+}
+
+.marked{
+  border-color: black;
+}
+
+#coverup {
+    background: white;
+    width: 7770px;
+    height: 300px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: -1;
+}
+
+.description {
+  font-size: 8pt
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+.hideCursor {
+  cursor: none
+}
+
+input {
+  /* TODO: only for Selected checkboxes */
+  vertical-align: middle
+}
+
+.variableRenamer {
+  width:  100%;
+  display:none;
+}
+
+.entityName {
+  font-weight: 600;
+  font-size: 110%
+  float: left;
+}
+
+.wdName {
+  font-size: 80%;
+  float: right;
+}
+
+.entityDescription {
+  font-size: 90%;
+  clear: left;
+}

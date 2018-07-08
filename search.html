@@ -1,0 +1,143 @@
+<html>
+  <head>
+    <title> QLever-GUI </title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"> 
+
+
+
+    <link rel="stylesheet" type="text/css" href="search.css"/>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="js_cookie.js"></script>
+    <script src="./search.js"></script>
+    <script src="./search2.js"></script>
+    <script src="./search3.js"></script>
+  </head>
+  <body>
+    <div class="normal" id="heading">QLever-GUI (Pre-Pre-Pre-Alpha)</div>
+
+    <div id = "left">
+      Use textfield to perform prefix search for Wikidata entities and
+      properties. Drag and drop the found entities into the triples
+      in the right column.
+  <button type ="button" onclick="viewSource()">View Source</button>
+    <input id="query"/><br />
+
+
+    <div id="searchRes" > </div>
+    <div id="searchResPred" > </div>
+    <div id = "thanks"> </div>
+    </div>
+    <div id="right">
+      Drag and Drop variables (grey) and entities (from the left search)
+      into the colored Triple fields to build sparql queries. Double-Click
+      variables to rename them.
+      <div id="triples">
+        <div class="triple" id="variables">
+          <div class="variable" id="x0" wdName="?x0" draggable="true"
+            ondragstart="drag(event)" ondblclick="renameVariable(this)"
+            readableName="?x0" wdType="2">  
+            <div id="x0Label">?x0</div>
+            <input id="x0Input" class="variableRenamer"
+                                onchange="restrictVariableRename(this)"
+                                oninput="restrictVariableRename(this)"
+                                onkeydown="handleEnterEscape(event)" 
+                                onfocusout="renameVariableFinished(this)">
+            <div>
+              Selected:
+            <input type="checkbox" id="selectedX0" value="?x0"
+						   onchange="handleSelectCheckbox(this)">
+            </div>
+          </div>
+          <div class="variable" id="x1" wdName="?x1" draggable="true"
+            ondragstart="drag(event)" ondblclick="renameVariable(this)" readableName="?x1" wdType="2" > 
+            <div id="x1Label">?x1</div>
+            <input id="x1Input" class="variableRenamer"
+                                onchange="restrictVariableRename(this)"
+                                oninput="restrictVariableRename(this)"
+                                onkeydown="handleEnterEscape(event)" 
+                                onfocusout="renameVariableFinished(this)">
+            <div>
+              Selected:
+            <input type="checkbox" id="selectedX1" value="?x1" onchange="handleSelectCheckbox(this)">
+            </div>
+          </div>
+          <div class="variable" id="x2" wdName="?x2" draggable="true" ondragstart="drag(event)"  ondblclick="renameVariable(this)" readableName="?x2"  wdType="2" >
+            <div id="x2Label">?x2</div>
+            <input id="x2Input" class="variableRenamer"
+                                onchange="restrictVariableRename(this)"
+                                oninput="restrictVariableRename(this)"
+                                onkeydown="handleEnterEscape(event)" 
+                                onfocusout="renameVariableFinished(this)">
+            <div>
+              Selected:
+            <input type="checkbox" id="selectedX2" value="?x2" onchange="handleSelectCheckbox(this)">
+            </div>
+          </div>
+          <div class="variable" id="x3" wdName="?x3" draggable="true" ondragstart="drag(event)" ondblclick="renameVariable(this)" readableName="?x3"  wdType="2" >
+            <div id="x3Label">?x3</div>
+            <input id="x3Input" class="variableRenamer"
+                                onchange="restrictVariableRename(this)"
+                                oninput="restrictVariableRename(this)"
+                                onkeydown="handleEnterEscape(event)" 
+                                onfocusout="renameVariableFinished(this)">
+            <div>
+              Selected:
+            <input type="checkbox" id="selectedX3" value="?x3" onchange="handleSelectCheckbox(this)">
+            </div>
+        </div>
+        </div>
+      <div class="triple" id="triple0">
+        <div class="subject" id="subject0" ondrop="drop(event)" ondragover="allowDrop(event)"
+          ondragenter="markPossibleDragTarget(event)"
+          ondragleave="unmarkPossibleDragTarget(event)"
+	  draggable="true" ondragstart="drag(event)" 
+	  ondragend="endDrag(event)"  
+          onclick="showDetails(this)"> </div>
+        <div class="property" id="property0" ondrop="drop(event)" ondragover="allowDrop(event)"
+          ondragenter="markPossibleDragTarget(event)"
+          ondragleave="unmarkPossibleDragTarget(event)" 
+	  draggable="true" ondragstart="drag(event)" 
+	  ondragend="endDrag(event)"  
+          onclick="showDetails(this)"> </div>
+        <div class="object" id="object0" ondrop="drop(event)" ondragover="allowDrop(event)"
+          ondragenter="markPossibleDragTarget(event)"
+          ondragleave="unmarkPossibleDragTarget(event)"
+	  draggable="true" ondragstart="drag(event)" 
+	  ondragend="endDrag(event)"  
+          onclick="showDetails(this)"> </div>
+        <button class="deleteTripleButton" onclick="removeTriple(0)"> - </button>
+      </div>
+      </div>
+      <div class="triple">
+        <button class="addTripleButton" onclick="addTriple()">Add Triple </button>
+    </div>
+      <div class="triple">
+        <button class="addTripleButton"
+          onclick="removeEmptyTriples()">SendQuery </button>
+      </div>
+      <div class="tripleDesc" id="orderButtons" ></div>
+      <div class="tripleDesc" id="orderButtonsType" style="display:none;">
+        Ordering Type:
+        <input type="radio" name="orderType" value="s" id="typeSitelinks"
+	checked="checked">
+	<label for="typeSitelinks"> numSitelinks </label>
+        <input type="radio" name="orderType" value="n" id="typeNumeric">
+	<label for="typeNumeric"> Numeric </label>
+        <input type="radio" name="orderType" value="a" id="typeAlphabetical">
+	<label for="typeAlphabetical"> Alphabetical </label>
+
+      </div>
+      <div class="tripleDesc" id="orderButtonsAsc" style="display:none">
+        <input type="radio" name="orderAsc" id="ascASC" value="a" checked="checked">
+	<label for="ascASC"> Ascending </label>
+        <input type="radio" name="orderAsc" value="b" id="ascDESC">
+	<label for="ascDESC"> Descending </label>
+
+      </div>
+      <div class="tripleDesc" id="orderButtonsDesc" ></div>
+      <div class="tripleDesc"><div class="resClass" id="detailRes"></div></div>
+    <div id="queryRes" class="resClass"></div>
+    </div>
+    <div id="coverup"> </div>
+  </body>
+</html>

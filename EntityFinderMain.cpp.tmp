@@ -1,0 +1,20 @@
+#include "EntityFinder.h"
+
+#include <iostream>
+#include <sstream>
+// ______________________________________________________________________________
+int main(int argc, char** argv) {
+ EntityFinder finder(argv[1]);
+ while(true) {
+   std::cout << "Enter something to search for" << std::endl;
+   std::string input;
+   std::getline(std::cin, input);
+   auto res = finder.findEntitiesByPrefix(input); 
+   int cnt = 0;
+   for (auto& el : res) {
+     if (cnt > 4) break;
+     std::cout << el.toString() << std::endl;
+     cnt++;
+   }
+ }
+}
