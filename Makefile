@@ -6,7 +6,7 @@ OBJECTS = $(addsuffix .o, $(basename $(filter-out %Main.cpp %Test.cpp, $(wildcar
 CPPLINT_PATH = ./cpplint.py
 CPPLINT_FILTERS = -runtime/references,-build/header_guard,-build/include
 
-PORT = 9998
+PORT = 9999
 FILE = /nfs/raid5/kalmbacj/SplitParsing/withPreferredComplete
 
 .PRECIOUS: %.o
