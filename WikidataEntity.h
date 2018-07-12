@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../cereal/include/cereal/cereal.hpp"
-#include "../cereal/include/cereal/archives/json.hpp"
-#include "../picojson/picojson.h"
+#include "./cereal/include/cereal/cereal.hpp"
+#include "./cereal/include/cereal/archives/json.hpp"
+#include "./picojson/picojson.h"
 
 
 using std::string;

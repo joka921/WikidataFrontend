@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "../picojson/picojson.h"
+#include "./picojson/picojson.h"
 #include "EntityFinder.h"
 
 // __________________________________________________________________________________

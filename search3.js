@@ -51,10 +51,17 @@ function updateOrderRadioButtons() {
 // _______________________________________________________________________
 function determineSettingString(selectedArray) {
   var res = "?s=";
+  var orderClause = " ORDER BY";
   var radioType = document.getElementsByName("orderAsc");
   for (var i = 0; i < radioType.length; i++) {
     if (radioType[i].checked) {
       res = res + radioType[i].value;
+      if (radioType[i].value == 'a') {
+	orderClause += " ASC(";
+      } else {
+	orderClause += " DESC(";
+      }
+
       break;
     }
   }
@@ -70,6 +77,7 @@ function determineSettingString(selectedArray) {
   for (var i = 0; i < radioType.length; i++) {
     if (radioType[i].checked) {
       orderVariableName = radioType[i].value;
+      orderClause += orderVariableName + ') ';
       break;
     }
   }
@@ -79,6 +87,7 @@ function determineSettingString(selectedArray) {
     if (orderVariableName == selectedArray[i]) {
       varIdx = i;
       variableFound = true;
+    res = "?s=ax0";  // means no ordering
       break;
     }
   }
@@ -86,7 +95,9 @@ function determineSettingString(selectedArray) {
     res += varIdx;
   } else {
     res = "?s=ax0";  // means no ordering
+    orderClause = "";
   }
+  console.log("order Clause: " + orderClause);
   
-  return res;
+  return [res, orderClause];
 }

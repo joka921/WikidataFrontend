@@ -118,7 +118,7 @@ function removeEmptyTriples() {
     showErrorInResline("You have to select at least one variable which also occurs in triples", "queryRes");
   } else {
     // TODO: also filter empty queries!!!
-    sparql += " LIMIT 10"
+    sparql += " LIMIT 100000"
     executeSparqlQuery(sparql, selectedVars);
   }
 }
@@ -131,8 +131,9 @@ function executeSparqlQuery(query, selectedArray) {
     console.log(query);
     var host = window.location.host + window.location.pathname;
     // TODO: not- hardcoded port (what is the easiest way ??)
-    var settings = determineSettingString(selectedArray);
-    var url = "http://" + host + settings +  "?r=" + escape(query);
+    var orderSettings = determineSettingString(selectedArray);
+    query += orderSettings[1];
+    var url = "http://" + host + orderSettings[0] +  "?r=" + escape(query);
     //url=escape(url);
     console.log(url);
     $.getJSON(url, function(data) {
