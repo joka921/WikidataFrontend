@@ -16,26 +16,22 @@ WikidataEntity::WikidataEntity(const std::string& line) {
   }
 }
 
-// ________________________________________________
-picojson::object WikidataEntityShort::ConvertToPicojsonObject() const {
-  picojson::value val;
-  picojson::object tempOb;
-
-  tempOb["wdName"] = picojson::value(wdName);
-  tempOb["name"] = picojson::value(name);
-  tempOb["description"] = picojson::value(description);
-  tempOb["type"] = picojson::value(EntityTypeToString(type));
-
-  //val.set<picojson::object>(tempOb);
-  return tempOb;
+void to_json(json &j, const WikidataEntityShort &ent) {
+  j = json();
+  j["wdName"] = ent.wdName;
+  j["name"] = ent.name;
+  j["description"] = ent.description;
+  j["type"] = EntityTypeToString(ent.type);
 }
 
 // ____________________________________________________
-picojson::array WikidataEntityShort::nestedVecToArray(const std::vector<std::vector<WikidataEntityShort>>& vec) {
-  picojson::array ret;
+json WikidataEntityShort::nestedVecToArray(
+    const std::vector<std::vector<WikidataEntityShort>> &vec) {
+  json ret = vec;
+  /*
   ret.reserve(vec.size());
   for (const auto& v: vec) {
-    picojson::array inner(v.size());
+     inner(v.size());
     for (size_t i = 0; i < v.size(); ++i) {
       inner[i].set(v[i].ConvertToPicojsonObject());
     }
@@ -43,6 +39,7 @@ picojson::array WikidataEntityShort::nestedVecToArray(const std::vector<std::vec
     ret.back().set(inner);
   }
   return ret;
+  */
 }
 
 // Converter Function

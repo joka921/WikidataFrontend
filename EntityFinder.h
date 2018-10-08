@@ -53,52 +53,48 @@ namespace boost {
 
 // ___________________________________________________________
 class EntityFinder {
- private:
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version);
-  std::vector<std::string> wdNameVec; // Name in Wikidata, e.gl "Q23"
-  std::vector<std::string> wdNameVecPred; // Name in Wikidata, e.gl "Q23"
 
-  std::vector<unsigned> numSitelinkVec;
-  std::vector<unsigned> numSitelinkVecPred;
-
-  // in wikidata dumps, the entries are not ordered, so we have to keep track of
-  // their indices
-  //  if EntityToIdxVec[x] = y then entity "Qx" can be found at idx y, same for
-  //  properties
-  std::vector<size_t> EntityToIdxVec;
-  std::vector<size_t> PropertyToIdxVec;
-  std::string descriptionFilename;
-
-  std::vector<std::string> nameVec; // readable names
-  std::vector<std::string> nameVecPred; // readable names for predicates/properties
-
-  std::vector<std::string> descVec; // descriptions
-  std::vector<std::string> descVecPred;
-
-
-  // sorted vector where aliases are assigned to indices in the 2 vectors above
-  // TODO: public actually only here for debugging
-  std::string readSingleDescription(std::ifstream* descFile, size_t internalIdx, EntityType type ) const;
  public:
-  std::vector<std::pair<std::string, unsigned>> aliasVec;
-  std::vector<std::pair<std::string, unsigned>> aliasVecPred;
-//  std::unordered_map<std::string, std::vector<unsigned>> wordMap;
-  static std::pair<size_t, EntityType> getIdxFromWdName(const std::string& wdName);
+   using IdxVec = std::vector<std::pair<size_t, size_t>>;
+   using AliasIt =
+       std::vector<std::pair<std::string, unsigned>>::const_iterator;
+   static std::pair<size_t, EntityType>
+   getIdxFromWdName(const std::string &wdName);
 
+   // public:
+   // Construct from file prepared by Preprocessor
+   void InitializeFromTextFile(const std::string &filename);
+   void WriteToFile(const std::string &filename);
+   static EntityFinder ReadFromFile(const std::string &filename);
+   static EntityFinder SetupFromFilename(const std::string &filename);
 
-// public:
-  // Construct from file prepared by Preprocessor
-  void InitializeFromTextFile(const std::string& filename);
-  void WriteToFile(const std::string& filename);
-  static EntityFinder ReadFromFile(const std::string& filename);
+   EntitySearchResult findEntitiesByPrefix(const std::string &prefix,
+                                           SearchMode mode = SearchMode::All);
 
-  EntitySearchResult findEntitiesByPrefix(const std::string& prefix, SearchMode mode = SearchMode::All);
+   std::vector<std::vector<WikidataEntityShort>>
+   wdNamesToEntities(const std::vector<std::vector<string>> &wdNames);
+   std::vector<WikidataEntityShort>
+   wdNamesToEntities(const std::vector<string> &wdNames);
+   WikidataEntityShort wdNamesToEntities(const std::string &wdNames) const;
 
-  std::vector<std::vector<WikidataEntityShort>> wdNamesToEntities(const std::vector<std::vector<string>>& wdNames);
-  std::vector<WikidataEntityShort> wdNamesToEntities(const std::vector<string>& wdNames);
-  WikidataEntityShort wdNamesToEntities(const std::string& wdNames) const;
+ private:
+   // ______________________________________________________________________
+   EntitySearchResult convertIdxVecsToSearchResult(const IdxVec &exactIndices,
+                                                   const IdxVec &prefixIndices,
+                                                   const EntityVectors &v);
+   // _______________________________________________________________________
+   std::pair<IdxVec, IdxVec> rankResults(AliasIt lower, AliasIt upperExact,
+                                         AliasIt upperPrefixes,
+                                         const EntityVectors &v);
+   const size_t RESULTS_TO_SEND = 40;
+   friend class boost::serialization::access;
+   template <class Archive>
+   void serialize(Archive &ar, const unsigned int version);
+
+   std::string descriptionFilename;
+
+   EntityVectors _entityVecs;
+   EntityVectors _propertyVecs;
 };
 
 

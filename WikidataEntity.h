@@ -1,15 +1,24 @@
 #ifndef _WIKIDATA_ENTITY_H
 #define _WIKIDATA_ENTITY_H
 
+#include "./third_party/cereal/include/cereal/archives/json.hpp"
+#include "./third_party/cereal/include/cereal/cereal.hpp"
+#include "./third_party/json/include/nlohmann/json.hpp"
+#include "./third_party/picojson/picojson.h"
+#include <iostream>
 #include <string>
 #include <vector>
+<<<<<<< HEAD
 #include <iostream>
 #include "./cereal/include/cereal/cereal.hpp"
 #include "./cereal/include/cereal/archives/json.hpp"
 #include "./picojson/picojson.h"
 
+=======
+>>>>>>> 95ee882e177cb511267d054f782c56b6e321f305
 
 using std::string;
+using json = nlohmann::json;
 
 // _________________________________________________________________________-
 enum class EntityType {
@@ -68,20 +77,22 @@ class WikidataEntityShort {
   // default constructor needed for resize etc
   WikidataEntityShort() = default;
 
-  static picojson::array nestedVecToArray(const std::vector<std::vector<WikidataEntityShort>>& vec);
-  
+  static json
+  nestedVecToArray(const std::vector<std::vector<WikidataEntityShort>> &vec);
+
   // _____________________________________________________________________________
   static void sortVec(std::vector<std::vector<WikidataEntityShort>>& vec, size_t orderVarIdx, OrderType type, bool asc);
 
   string toString() {return wdName + "\t" + name + "\t" + description;}
-  picojson::object ConvertToPicojsonObject() const;
+  static void to_json(json &j, const WikidataEntityShort &ent);
 
   // TODO: should probably not be here
-  static int literalToInt(const std::string& str);
+  static int literalToInt(const std::string &str);
 
-  template<class Archive>
-    void serialize(Archive& ar, std::uint32_t const version) {
-      ar(CEREAL_NVP(wdName), CEREAL_NVP(name), CEREAL_NVP(description), CEREAL_NVP(numSitelinks), CEREAL_NVP(type));
+  template <class Archive>
+  void serialize(Archive &ar, std::uint32_t const version) {
+    ar(CEREAL_NVP(wdName), CEREAL_NVP(name), CEREAL_NVP(description),
+       CEREAL_NVP(numSitelinks), CEREAL_NVP(type));
     }
 
 };
