@@ -79,9 +79,11 @@ add_subdirectory(src)
 #add_subdirectory(src/experiments)
 #add_subdirectory(test)
 
-#configure_file(src/web/index.html index.html)
-#configure_file(src/web/style.css style.css)
-#configure_file(src/web/script.js script.js)
+configure_file(src/web/search.html search.html)
+configure_file(src/web/search.css search.css)
+configure_file(src/web/search.js search.js)
+configure_file(src/web/search2.js search2.js)
+configure_file(src/web/search3.js search3.js)
 
 
 add_executable(WikidataFrontendMain SearchServerMain.cpp)
