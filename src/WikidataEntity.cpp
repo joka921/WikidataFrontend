@@ -27,19 +27,7 @@ void to_json(json &j, const WikidataEntityShort &ent) {
 // ____________________________________________________
 json WikidataEntityShort::nestedVecToArray(
     const std::vector<std::vector<WikidataEntityShort>> &vec) {
-  json ret = vec;
-  /*
-  ret.reserve(vec.size());
-  for (const auto& v: vec) {
-     inner(v.size());
-    for (size_t i = 0; i < v.size(); ++i) {
-      inner[i].set(v[i].ConvertToPicojsonObject());
-    }
-    ret.emplace_back();
-    ret.back().set(inner);
-  }
-  return ret;
-  */
+  return vec;
 }
 
 // Converter Function

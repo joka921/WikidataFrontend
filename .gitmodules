@@ -4,3 +4,6 @@
 [submodule "third_party/picojson"]
 	path = third_party/picojson
 	url = https://github.com/kazuho/picojson.git
+[submodule "third_party/httpclient-cpp"]
+	path = third_party/httpclient-cpp
+	url = https://github.com/embeddedmz/httpclient-cpp.git

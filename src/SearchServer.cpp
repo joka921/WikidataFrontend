@@ -208,12 +208,6 @@ std::string SearchServer::createResponse(const std::string& req)
 }
 
 // _____________________________________________________________________________
-std::stringstream SearchServer::handleFuzzyPrefixSearchRequest(
-    const std::string& params) const {
-}
-
-
-// _____________________________________________________________________________
 std::string SearchServer::getContentType(const std::string& uri) {
   std::string contentType = DEFAULT_CONTENT_TYPE;
 

@@ -1,8 +1,5 @@
 #ifndef _QLEVER_COMMUNICATOR_H
 #define _QLEVER_COMMUNICATOR_H
-// Class which handles the communication from this Frontend Server to the QLever
-// Backend.
-//
 #include <string> 
 
 #include "HTTPClient.h"
@@ -12,14 +9,18 @@
 // cyclic dependency
 class EntityFinder;
 
-
-
-// ________________________________________________________________________--
+// Class which handles the communication from this Entity Finder / Frontend
+// Server to the QLever Backend.
 class QLeverCommunicator {
+  // address of QLever server
   std::string _serverAddress;
+  // port of the QLever server
   unsigned int _port;
+  // http client handling the request
   CHTTPClient _client;
 
+  // Return the result payload (json) when sending the escaped SPARQL query
+  // query query to the QLever server
   std::string getRawQLeverResponse(const std::string& query);
   std::string parseJSON(const std::string& json, const EntityFinder* finder, const QuerySettings& settings);
 

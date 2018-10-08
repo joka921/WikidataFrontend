@@ -1,12 +1,10 @@
 #include "QLeverCommunicator.h"
-
 #include <sstream>
-
-#include "./third_party/json/include/nlohmann/json.hpp"
-#include "./third_party/picojson/picojson.h"
+#include <nlohmann/json.hpp>
 #include "EntityFinder.h"
 
 using json = nlohmann::json;
+
 // __________________________________________________________________________________
 QLeverCommunicator::QLeverCommunicator(const std::string& serverAddress, unsigned int port)
     : _port(port), _serverAddress(serverAddress), _client([](const std::string& s) {std::cout << s << std::endl;}) {
@@ -57,6 +55,7 @@ std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
   }
   if (entities.size() > 20) entities.resize(20);
   j["res"] = WikidataEntityShort::nestedVecToArray(entities);
+  std::cout << j.dump(4);
   return j.dump();
 }
 
