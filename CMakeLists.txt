@@ -21,27 +21,11 @@ endif()
 ##### Essential settings #####
 ###############################################################################
 
-################################
-# Threading
-################################
-find_package (Threads REQUIRED)
-
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wall -Wextra -Wno-missing-field-initializers -DGTEST_HAS_TR1_TUPLE=0 -DGTEST_USE_OWN_TR1_TUPLE=0")
-
-if (${PERFTOOLS_PROFILER})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lprofiler")
-    message(STATUS "Adding -lprofiler (make sure your have google-perftools installed.)")
-endif()
-
-if (${ALLOW_SHUTDOWN})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DALLOW_SHUTDOWN")
-    message(STATUS "Adding -DALLOW_SHUTDOWN")
-endif()
-
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -65,6 +49,21 @@ include_directories(third_party/json/include/)
 #add_subdirectory(third_party/cereal)
 include_directories(third_party/cereal/include)
 
+################################
+# HTTP 
+################################
+add_subdirectory(third_party/httpclient-cpp)
+include_directories(third_party/httpclient-cpp/HTTP)
+find_package(CURL REQUIRED)
+
+################################
+# BOOST 
+################################
+find_package(Boost COMPONENTS serialization system REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY_DIR})
+
+
 message(STATUS ---)
 message(STATUS "CXX_FLAGS are : " ${CMAKE_CXX_FLAGS})
 message(STATUS "CXX_FLAGS_RELEASE are : " ${CMAKE_CXX_FLAGS_RELEASE})
@@ -86,7 +85,8 @@ add_subdirectory(src)
 
 
 add_executable(WikidataFrontendMain SearchServerMain.cpp)
-target_link_libraries(WikidataFrontendMain SearchServer ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(WikidataFrontendMain SearchServer
+  ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} httpclient ${CURL_LIBRARIES})
 
 
 #enable_testing()

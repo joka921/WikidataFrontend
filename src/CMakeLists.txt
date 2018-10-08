@@ -1,11 +1,11 @@
 
 add_library(SearchServer
-            EntitySearchResult.h  HTTPClient.h
+            EntitySearchResult.h 
 	    QLeverResult.h ServerUtils.h
-            EntityFinder.cpp  HTTPClientBoost.h     
+            EntityFinder.cpp     
 	    QLeverCommunicator.cpp  SearchServer.cpp  
 	    SearchServerMainTest.cpp  WikidataEntity.cpp
-            EntityFinder.h HTTPClient.cpp
+            EntityFinder.h
 	    QLeverCommunicator.h SearchServer.h  
 	    ServerUtils.cpp WikidataEntity.h
 	    )
