@@ -12,7 +12,15 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   std::ifstream file(filename);
   descriptionFilename = filename + ".desc";
   std::ifstream fileDesc(descriptionFilename);
+  if (!(file && fileDesc)) {
+    std::cerr
+        << "ERROR: either the name file " << filename
+        << " or the description filename " << descriptionFilename
+        << "could not been opened. Search engine will contain no entities.\n";
+    return;
+  }
   std::string line;
+
   while (std::getline(file, line)) {
     auto entity = WikidataEntity(line);
     // Determine whether this is a property (P... or a entity (Q...)
@@ -30,43 +38,49 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
       sVec = &numSitelinkVecPred;
     }
 
+    // push internal name (Q42, P31 etc.) and number of sitelinks
     wdVec->push_back(entity.name);
     sVec->push_back(entity.numSitelinks);
+
     if (entity.aliases.size() > 0) {
+      // the first alias is the actual name of the entity
       nVec->push_back(entity.aliases[0]);
     } else {
       nVec->push_back("No readable name");
     }
 
+    // push all aliases of the entity and the index of the current entity
     for ( auto& el : entity.aliases) {
       std::transform(el.begin(), el.end(), el.begin(), ::tolower);
-      // TODO: substring memory consumption test
       aVec->push_back(std::make_pair(el, wdVec->size() -1));
     }
 
-    // for each line in alias file there must exist exactly one line in
-    // description file. We don't want the description but only the offsets
-    // TODO: is there a way to do this without actually reading the file?
-    //descVec->push_back(fileDesc.tellg());
+    // get the description
     std::string tempDesc;
-    std::getline(fileDesc, tempDesc);
-    dVec->push_back(tempDesc);
+    if (std::getline(fileDesc, tempDesc)) {
+      dVec->push_back(std::move(tempDesc));
+    } else {
+      dVec->push_back("no description");
+    }
   }
+
+  // sort the aliases alphabetically so we can perform binary search on them
   auto sortPred = [](const std::pair<std::string, unsigned>&  p1,
                      const std::pair<std::string, unsigned>&  p2) {
      return p1.first < p2.first;};
-  std::cout << aliasVec.size() << "entities" << std::endl;
-  std::cout << aliasVecPred.size() << "Predicates" << std::endl;
   std::sort(aliasVec.begin(), aliasVec.end(), sortPred);
   std::sort(aliasVecPred.begin(), aliasVecPred.end(), sortPred);
-  
 
-  // Set up the "translation indices" for the sub/objects
+  // Set up the "translation indices" for the Q... entities
+
+  // get highest id
   size_t maxIdxEntity = 0;
   for (const auto& el : wdNameVec) {
     size_t idx = getIdxFromWdName(el).first;
     maxIdxEntity = std::max(maxIdxEntity, idx);
   }
+
+  // use an array with empty value to guarantee O(1) access
   EntityToIdxVec.resize(maxIdxEntity + 1);
   std::fill(EntityToIdxVec.begin(), EntityToIdxVec.end(), -1);
 
@@ -77,7 +91,7 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
     num += 1;
   }
 
-  // same for the properties
+  // Set the same array up for the properties
   maxIdxEntity = 0;
   for (const auto& el : wdNameVecPred) {
     size_t idx = getIdxFromWdName(el).first;
@@ -94,6 +108,7 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
     num += 1;
   }
 
+  // these are read only
   EntityToIdxVec.shrink_to_fit();
   PropertyToIdxVec.shrink_to_fit();
   aliasVec.shrink_to_fit();
@@ -102,16 +117,17 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   descVecPred.shrink_to_fit();
   nameVec.shrink_to_fit();
   nameVecPred.shrink_to_fit();
-
 }
 
 // __________________________________________________________________
 EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefixA, SearchMode mode) 
 {
   auto startTime = std::chrono::high_resolution_clock::now();
+  // mutable version of argument
   std::string prefix = prefixA;
-  std::ifstream descFile(descriptionFilename);
   std::transform(prefix.begin(), prefix.end(), prefix.begin(), ::tolower);
+
+  // lambda functions for upper and lower bound for prefix and exact matches
   auto boundPred = [](const std::pair<std::string, unsigned>&  p1,
                      const std::string& p2) { return p1.first < p2;};
   auto upperBoundPred = [](const std::string& p1, const std::pair<std::string, unsigned>&  p2) 
@@ -119,7 +135,8 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
   auto upperBoundPredExact = [](const std::string& p1, const std::pair<std::string, unsigned>&  p2) 
   { return p1 <= p2.first;};
 
-  //TODO: some meaningful mixing of subjects and properties for searchmode "all"
+  // choose the correct set of internal data structures depending on
+  // the search type (Properties or other Entities)
   auto* wdVec = &wdNameVec;
   auto* vec = &aliasVec;
   auto* dVec = &descVec;
@@ -134,24 +151,30 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
     sVec = &numSitelinkVecPred;
     type = EntityType::Property;
   }
-   EntitySearchResult ret;
-   auto res = std::lower_bound(vec->begin(), vec->end(), prefix, boundPred);
-   if (res == vec->end() || !std::equal(prefix.begin(), prefix.end(), (*res).first.begin())) {
-     // no real results found
-     ret.totalResults = 0;
-     return ret;
+
+  // Perfrom the actual search
+  EntitySearchResult ret;
+
+  // first find matches for the prefixes
+  // lower bound
+  auto res = std::lower_bound(vec->begin(), vec->end(), prefix, boundPred);
+  if (res == vec->end() ||
+      !std::equal(prefix.begin(), prefix.end(), (*res).first.begin())) {
+    ret.totalResults = 0;
+    return ret;
    }
 
    auto upper = std::upper_bound(res, vec->end(), prefix, upperBoundPred);
+   // upper bound for the exact matches
    auto upperExact = std::lower_bound(res, upper, prefix + ' ', boundPred);
    auto findTime = std::chrono::high_resolution_clock::now();
    auto numPrefixMatches = ret.totalResults = upper - res;
    auto numExactMatches = upperExact - res;
    std::cout << prefix << std::endl;
-   std::cout << "found " << upper - res << std::endl;
-   //TODO parametrize this and experiment
-   size_t maxRelevant = 100000;
-   
+
+   // If we get more results than this we do not calculate the exact ranking but
+   // truncate the result alphabetically
+   const size_t maxRelevant = 100000;
 
    if (numPrefixMatches > maxRelevant) {
      upper = res + maxRelevant;
@@ -160,26 +183,30 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
      }
    }
 
+   // format is <numberOfSitelinks, Idx>
+   // make sorting faster
    std::vector<std::pair<size_t,size_t>> onlyIdxVec;
    std::vector<std::pair<size_t,size_t>> onlyIdxVecExact;
    onlyIdxVec.reserve(upper - upperExact);
    onlyIdxVecExact.reserve(upperExact - res);
+
+   // setup sitelink/idx vector for exact matches
    while (res != upperExact) {
      auto idx = (*res).second;
      onlyIdxVecExact.push_back(std::make_pair((*sVec)[idx], idx));
      res++;
    }
+   // .. and for prefix matches
    while (res != upper) {
      auto idx = (*res).second;
      onlyIdxVec.push_back(std::make_pair((*sVec)[idx], idx));
-     //ret.entities.push_back(WikidataEntityShort((*wdVec)[idx], (*nVec)[idx], (*dVec)[idx]));
-     //std::cout << ret.size() << std::endl;
      res++;
    }
-   // TODO: this way we do not eliminate hits, but we also do not eliminate
-   // all duplicates
+
+   // predicate for sorting according to the sitelink score
    auto sortPred = [](const std::pair<size_t, size_t>& w1, const std::pair<size_t, size_t>& w2)
                       { return w1.first > w2.first;};
+   // predicate for the elimination of equal
    auto equalPred = [](const std::pair<size_t, size_t>& w1, const std::pair<size_t, size_t>& w2)
                       { return w1.second == w2.second;};
    // reversed order, because we want high number of sitelinks first
@@ -206,19 +233,6 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
    std::cout << "took" << std::chrono::duration_cast<std::chrono::milliseconds>(translateTime - findTime).count() << " ms to translate to readable" << std::endl;
    return ret;
  }
-
- /*
-// ________________________________________________________________________
-std::string EntityFinder::readSingleDescription(std::ifstream* descFile, size_t internalIdx, EntityType type) const {
-  auto* descVec = type==EntityType::Subject ? &descOffsetVec : &descOffsetVecPred;
-   if (descFile->is_open()) {
-     descFile->seekg((*descVec)[internalIdx]);
-   }
-   std::string desc;
-   std::getline(*descFile, desc);
-   return desc;
-}
-*/
 
 // ________________________________________________________________________
 std::pair<size_t, EntityType> EntityFinder::getIdxFromWdName(const std::string& wdName) {
@@ -338,13 +352,17 @@ EntityFinder EntityFinder::SetupFromFilename(const std::string &filename) {
   std::ifstream is(filenamePreprocessed, std::ios::binary);
   if (is) {
     is.close();
-    std::cout << "Reading from preprocessed file " << filenamePreprocessed
-              << " if this is not desired (e.g. after updating the input data) "
-                 "please rename or remove this file\n";
+    std::cout
+        << "Reading from preprocessed file " << filenamePreprocessed
+        << ".\nIf this is not desired (e.g. after updating the input data),\n"
+           "please rename or remove this file\n";
     return ReadFromFile(filenamePreprocessed);
   } else {
+    std::cout << "no preprocessed file found, reading from original file "
+              << filename << ".\n";
     EntityFinder finder;
     finder.InitializeFromTextFile(filename);
+    finder.WriteToFile(filenamePreprocessed);
     return std::move(finder);
   }
 }
@@ -365,7 +383,4 @@ void EntityFinder::serialize(Archive& ar, const unsigned int version){
   ar & aliasVecPred;
   ar & numSitelinkVec;
   ar & numSitelinkVecPred;
-
 }
-
-
