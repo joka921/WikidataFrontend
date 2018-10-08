@@ -1,7 +1,8 @@
 
-// Copyright 2017, University of Freiburg,
-// Chair of Algorithms and Data Structures.
-// Author: Claudius Korzen <korzen@cs.uni-freiburg.de>.
+// Copyright 2017, Johannes Kalmbach <johannes.kalmbach@gmail.com>
+// Extended and adapted version of a master solution from the information
+// retrieval class written by
+// Claudius Korzen <korzen@cs.uni-freiburg.de>.
 
 #ifndef SEARCHSERVER_H_
 #define SEARCHSERVER_H_
@@ -70,19 +71,17 @@ const size_t NUM_ENTITIES_TO_SHOW = 5;
 class SearchServer {
  public:
   // Creates a new search server.
-  SearchServer(EntityFinder&& finder,  uint16_t port) :
-        _finder(std::move(finder)),
-	_communicator("alicudi.informatik.privat", 9999),
-        _server(boost::asio::ip::tcp::v4(), port),
-        _acceptor(_ioService, _server),
-        _client(_ioService),
-        _timer(_ioService),
-        _whitelist{
-      "search.css", "search.js", "search2.js", "search3.js", "search.html", "js_cookie.js"}
-        {}
+   SearchServer(EntityFinder &&finder, uint16_t port,
+                const string &qleverServer = "panarea.informatik.privat",
+                uint16_t qleverPort = 7001)
+       : _finder(std::move(finder)), _communicator(qleverServer, qleverPort),
+         _server(boost::asio::ip::tcp::v4(), port),
+         _acceptor(_ioService, _server), _client(_ioService),
+         _timer(_ioService), _whitelist{"search.css", "search.js", "search2.js",
+                                        "search3.js", "search.html"} {}
 
-  // Starts the server loop.
-  void run();
+   // Starts the server loop.
+   void run();
 
  private:
   // Handles a timeout of the client.
@@ -94,20 +93,12 @@ class SearchServer {
   // Creates the HTTP response for the given HTTP request.
   std::string createResponse(const std::string& request) ;
 
-  // Handles a fuzzy prefix search request for the query given in 'params', and
-  // plugs the result into the given stream (that holds the content of
-  // search.html).
-  std::stringstream handleFuzzyPrefixSearchRequest(const std::string& params)
-    const;
-
-
   // Returns the content type of the given file.
   static std::string getContentType(const std::string& fileName);
 
   EntityFinder _finder;
-  QLeverCommunicator _communicator;
-  std::unordered_set<string> _whitelist;
 
+  QLeverCommunicator _communicator;
   // The server socket.
   boost::asio::ip::tcp::endpoint _server;
 
@@ -125,6 +116,8 @@ class SearchServer {
 
   // The request buffer.
   boost::asio::streambuf _requestBuffer;
+
+  std::unordered_set<string> _whitelist;
 };
 
 #endif  // SEARCHSERVER_H_

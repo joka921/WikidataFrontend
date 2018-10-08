@@ -19,38 +19,6 @@
 enum class SearchMode {
   All, Subjects, Properties, Invalid};
 
-
-BOOST_SERIALIZATION_SPLIT_FREE(std::streampos)
-namespace boost {
-  namespace serialization {
-    template<class Archive>
-      void serialize(Archive & ar, std::mbstate_t& s, const unsigned int version) {
-        ar & s.__count;
-        ar & s.__value.__wch;
-      }
-
-    template<class Archive>
-      void save(Archive& ar, const std::streampos &s, const unsigned int version) 
-      {
-        std::streamoff off = s;
-        ar & off;
-        std::mbstate_t state = s.state();
-        ar & state;
-      }
-
-    template<class Archive>
-      void load(Archive& ar, std::streampos &s, const unsigned int version)
-      {
-        std::streamoff off;
-        ar & off;
-        std::mbstate_t state;
-        ar & state;
-        s += off;
-        s.state(state);
-      }
-  }
-}
-
 // ___________________________________________________________
 class EntityFinder {
 
