@@ -52,6 +52,7 @@ function updateOrderRadioButtons() {
 function determineSettingString(selectedArray) {
   var res = "?s=";
   var orderClause = " ORDER BY";
+  var additionalTriples = "";
   var radioType = document.getElementsByName("orderAsc");
   for (var i = 0; i < radioType.length; i++) {
     if (radioType[i].checked) {
@@ -65,19 +66,33 @@ function determineSettingString(selectedArray) {
       break;
     }
   }
+  var sortType = "none";
   radioType = document.getElementsByName("orderType");
   for (var i = 0; i < radioType.length; i++) {
     if (radioType[i].checked) {
       res = res + radioType[i].value;
+      sortType = radioType[i].value;
       break;
     }
   }
   radioType = document.getElementsByName("orderVar");
   var orderVariableName="none";
+  var modifiedOrderVariableName="none";
   for (var i = 0; i < radioType.length; i++) {
     if (radioType[i].checked) {
       orderVariableName = radioType[i].value;
-      orderClause += orderVariableName + ') ';
+      if (sortType == 's') {
+	sitelinkVar = orderVariableName + "-numLinks";
+	additionalTriples = " " + orderVariableName + " qlever:numSitelinks " + sitelinkVar + " . ";
+	modifiedOrderVariableName = sitelinkVar;
+      } else if (sortType == 'a') {
+	sitelinkVar = orderVariableName + "-label";
+	additionalTriples = " " + orderVariableName + " qlever:uniqueLabel " + sitelinkVar + " . ";
+	modifiedOrderVariableName = sitelinkVar;
+      } else {
+	modifiedOrderVariableName = orderVariableName;
+      }
+      orderClause += modifiedOrderVariableName + ') ';
       break;
     }
   }
@@ -96,8 +111,10 @@ function determineSettingString(selectedArray) {
   } else {
     res = "?s=ax0";  // means no ordering
     orderClause = "";
+    additionalTriples = "";
   }
   console.log("order Clause: " + orderClause);
+  console.log(res);
   
-  return [res, orderClause];
+  return [res, orderClause, additionalTriples];
 }

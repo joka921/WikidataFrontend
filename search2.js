@@ -79,6 +79,7 @@ function removeEmptyTriples() {
     PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX bd: <http://www.bigdata.com/rdf#>
+    PREFIX qlever: <http://qlever.informatik.uni-freiburg.de/>
     `
   sparqlHead += " SELECT";
   var selectedVarFound = false;
@@ -109,6 +110,9 @@ function removeEmptyTriples() {
   }
   sparqlHead += " WHERE \{ ";
   sparql = sparqlHead + sparql;
+  // TODO: only call determineSettings once.
+  var orderSettings = determineSettingString(selectedVars);
+  sparql += orderSettings[2]
   sparql += "\}";
   // clear for new errors etc
   $("#queryRes").empty();
