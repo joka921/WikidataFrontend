@@ -93,6 +93,7 @@ class EntityFinder {
   void InitializeFromTextFile(const std::string& filename);
   void WriteToFile(const std::string& filename);
   static EntityFinder ReadFromFile(const std::string& filename);
+  static EntityFinder SetupFromFilename(const std::string &filename);
 
   EntitySearchResult findEntitiesByPrefix(const std::string& prefix, SearchMode mode = SearchMode::All);
 

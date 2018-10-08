@@ -1,4 +1,4 @@
-CXX = g++ -O3  -Wall -std=c++14 -L/home/kalmbacj/lib -L curl/curlbuild/lib/
+CXX = g++ -O3  -Wall -std=c++14 -L/home/kalmbacj/lib -L curl/curlbuild/lib/ -I ./third_party/cereal/include -I ./third_party/json/include/
 MAIN_BINARIES = $(basename $(wildcard *Main.cpp))
 TEST_BINARIES = $(basename $(wildcard *Test.cpp))
 HEADER = $(wildcard *.h)
@@ -7,7 +7,7 @@ CPPLINT_PATH = ./cpplint.py
 CPPLINT_FILTERS = -runtime/references,-build/header_guard,-build/include
 
 PORT = 9999
-FILE = /nfs/raid5/kalmbacj/SplitParsing/withPreferredComplete
+FILE = ./examples/Q42
 
 .PRECIOUS: %.o
 

@@ -15,7 +15,8 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   std::string line;
   while (std::getline(file, line)) {
     auto entity = WikidataEntity(line);
-    //seperate Subject/Objects from Properties
+    // Determine whether this is a property (P... or a entity (Q...)
+    // and determine the correct data structures to store the data
     auto* wdVec = &wdNameVec;
     auto* dVec = &descVec;
     auto* nVec = &nameVec;
@@ -34,15 +35,13 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
     if (entity.aliases.size() > 0) {
       nVec->push_back(entity.aliases[0]);
     } else {
-      nVec->push_back("no name");
-      //std::cout << "No Name!!" << std::endl;
+      nVec->push_back("No readable name");
     }
 
     for ( auto& el : entity.aliases) {
       std::transform(el.begin(), el.end(), el.begin(), ::tolower);
       // TODO: substring memory consumption test
       aVec->push_back(std::make_pair(el, wdVec->size() -1));
-      //std::cout << el << " "  << wdVec.size() <<  std::endl;
     }
 
     // for each line in alias file there must exist exactly one line in
@@ -328,9 +327,26 @@ EntityFinder EntityFinder::ReadFromFile(const std::string& filename) {
   boost::archive::binary_iarchive oar(os);
   EntityFinder ent;
   oar >> ent;
-  std::cout << ent.aliasVec.size() << std::endl;
   std::cout << "Done." << std::endl;
   return ent;
+}
+
+// _____________________________________________________________________________
+EntityFinder EntityFinder::SetupFromFilename(const std::string &filename) {
+  std::string filenamePreprocessed = filename + ".preprocessed.dat";
+  std::cout << "Checking if preprocessed file exists\n";
+  std::ifstream is(filenamePreprocessed, std::ios::binary);
+  if (is) {
+    is.close();
+    std::cout << "Reading from preprocessed file " << filenamePreprocessed
+              << " if this is not desired (e.g. after updating the input data) "
+                 "please rename or remove this file\n";
+    return ReadFromFile(filenamePreprocessed);
+  } else {
+    EntityFinder finder;
+    finder.InitializeFromTextFile(filename);
+    return std::move(finder);
+  }
 }
 
 // ________________________________________________________________

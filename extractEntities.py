@@ -139,74 +139,92 @@ def extract_english(arr):
         res_str = "\t".join(alias_list)
     return res_str
 
+def entity_generator(infile):
+    open_fun = open
+    if infile.endswith(".bz2") :
+        open_fun = bz2.open
+    elif not infile.endswith(".json") :
+        raise NameError("Infiles must either be .json or .bz2 files")
+
+    with open_fun(infile, 'rt', encoding='utf-8') as f_in:
+        for line in f_in:
+            try:
+                data_raw = json.loads(line[:-2])
+                single_entity = True 
+            except json.decoder.JSONDecodeError:
+                try:
+                    data_raw = json.loads(line)
+                    data_raw = data_raw["entities"]
+                    single_entity = False
+                except json.decoder.JSONDecodeError:
+                    print("error in json decoder, line:")
+                    print(line)
+                    continue
+            if single_entity:
+                yield data_raw
+            else :
+                for entity in data_raw:
+                    yield data_raw[entity]
 
 def extract_entities(infile, outfile):
     count = 0
-    with bz2.open(infile, 'rt', encoding='utf-8') as f_in:
-        with open(outfile, 'w', encoding='utf-8') as f_out:
-            with open(outfile + '.desc', 'w', encoding='utf-8') as f_desc:
-                with open(outfile + '.triple', 'w', encoding='utf-8') as f_triples, open(outfile +
-                        '.complexTriple', 'w', encoding='utf-8') as f_complex:
-                    for line in f_in:
-                        #if ANYTHING GOES WRONG, continue
-                        #TODO: this is bad style and also catches
-                        #keyboardInterrupts
+
+    open_fun = open
+    if infile.endswith(".bz2") :
+        open_fun = bz2.open
+    elif not infile.endswith(".json") :
+        raise NameError("Infiles must either be .json or .bz2 files")
+
+    with open(outfile, 'w', encoding='utf-8') as f_out:
+        with open(outfile + '.desc', 'w', encoding='utf-8') as f_desc:
+            with open(outfile + '.triple', 'w', encoding='utf-8') as f_triples, open(outfile +
+                    '.complexTriple', 'w', encoding='utf-8') as f_complex:
+                for data in entity_generator(infile):
+                    try:
+                        wd_id = data["id"]
+
+                        # add the "<..>" brackets needed by QLever
+                        wd_id = "<" + wd_id + ">"
+
+                        num_sitelinks = 0
+                        if "sitelinks" in data:
+                            num_sitelinks = len(data["sitelinks"])
+                        print(wd_id + "\t<NUM_SITELINKS> \t \"" +
+                                str(num_sitelinks) + "\"\t.", file=f_triples)
                         try:
-                            try:
-                                data_raw = json.loads(line[:-2])
-                            except json.decoder.JSONDecodeError:
-                                print("error in json decoder, line:")
-                                print(line[:-2])
-                                continue
-                            data = data_raw
-                            wd_id = data["id"]
-
-
-
-
-
-                            # add the "<..>" brackets needed by QLever
-                            wd_id = "<" + wd_id + ">"
-
-                            num_sitelinks = 0
-                            if "sitelinks" in data:
-                                num_sitelinks = len(data["sitelinks"])
-                            print(wd_id + "\t<NUM_SITELINKS> \t \"" +
-                                    str(num_sitelinks) + "\"\t.", file=f_triples)
-                            try:
-                                label = data["labels"]["en"]["value"]
-                            except KeyError:
-                                #no english label
-                                continue
-                            #description = data["descriptions"]["en"]["value"]
-                            aliases = data["aliases"]
-                            alias_str = extract_english(data["aliases"])
-                            desc_str = extract_english(data["descriptions"])
-
-                            # check type of alias??
-                            out_str = wd_id + "\t" + str(num_sitelinks) + "\t" + label
-                            if (alias_str):
-                                out_str = out_str + "\t" + alias_str
-                            print(out_str, file=f_out)
-                            print(desc_str, file=f_desc)
-
-                            #handle the claims and statements
-                            claim_list = extract_claims(wd_id, data["claims"])
-                            for el in claim_list[0]:
-                                print(el, file=f_triples)
-                            for el in claim_list[1]:
-                                print(el, file=f_complex)
-                            count += 1
-                            if (count % 5000 == 0):
-                                print(count)
-                            """
-                            if count == 1000:
-                                break
-                            """
-                        except IndexError:
-                            print("error in parsing, line:")
-                            #print(line[:-2])
+                            label = data["labels"]["en"]["value"]
+                        except KeyError:
+                            #no english label
                             continue
+                        #description = data["descriptions"]["en"]["value"]
+                        aliases = data["aliases"]
+                        alias_str = extract_english(data["aliases"])
+                        desc_str = extract_english(data["descriptions"])
+
+                        # check type of alias??
+                        out_str = wd_id + "\t" + str(num_sitelinks) + "\t" + label
+                        if (alias_str):
+                            out_str = out_str + "\t" + alias_str
+                        print(out_str, file=f_out)
+                        print(desc_str, file=f_desc)
+
+                        #handle the claims and statements
+                        claim_list = extract_claims(wd_id, data["claims"])
+                        for el in claim_list[0]:
+                            print(el, file=f_triples)
+                        for el in claim_list[1]:
+                            print(el, file=f_complex)
+                        count += 1
+                        if (count % 5000 == 0):
+                            print(count)
+                        """
+                        if count == 1000:
+                            break
+                        """
+                    except IndexError:
+                        print("error while parsing entity:")
+                        print(data)
+                        continue
 
 if __name__ == "__main__":
     import sys
