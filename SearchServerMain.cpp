@@ -14,11 +14,10 @@
 #include <codecvt>
 #include <unordered_set>
 
-#include "./EntityFinder.h"
-#include "./ServerUtils.h"
-#include "./QLeverCommunicator.h"
-#include "./SearchServer.h"
-
+#include "./src/EntityFinder.h"
+#include "./src/QLeverCommunicator.h"
+#include "./src/SearchServer.h"
+#include "./src/ServerUtils.h"
 
 namespace basio = boost::asio;
 

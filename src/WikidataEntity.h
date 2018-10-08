@@ -1,21 +1,13 @@
 #ifndef _WIKIDATA_ENTITY_H
 #define _WIKIDATA_ENTITY_H
 
-#include "./third_party/cereal/include/cereal/archives/json.hpp"
-#include "./third_party/cereal/include/cereal/cereal.hpp"
-#include "./third_party/json/include/nlohmann/json.hpp"
-#include "./third_party/picojson/picojson.h"
+#include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
-<<<<<<< HEAD
 #include <iostream>
-#include "./cereal/include/cereal/cereal.hpp"
-#include "./cereal/include/cereal/archives/json.hpp"
-#include "./picojson/picojson.h"
-
-=======
->>>>>>> 95ee882e177cb511267d054f782c56b6e321f305
 
 using std::string;
 using json = nlohmann::json;

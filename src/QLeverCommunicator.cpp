@@ -2,8 +2,8 @@
 
 #include <sstream>
 
-#include "./third_party/json/include/nlohmann/json.hpp"
-#include "./third_party/picojson/picojson.h"
+#include <nlohmann/json.hpp>
+//#include "./third_party/picojson/picojson.h"
 #include "EntityFinder.h"
 
 using json = nlohmann::json;
