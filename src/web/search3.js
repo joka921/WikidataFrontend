@@ -82,12 +82,14 @@ function determineSettingString(selectedArray) {
     if (radioType[i].checked) {
       orderVariableName = radioType[i].value;
       if (sortType == 's') {
-	sitelinkVar = orderVariableName + "-numLinks";
-	additionalTriples = " " + orderVariableName + " qlever:numSitelinks " + sitelinkVar + " . ";
+	var sitelinkVar = orderVariableName + "-numLinks";
+	var metaNodeVar = orderVariableName + "-metaNode";
+	additionalTriples = " " + metaNodeVar + " wikibase:sitelinks " + sitelinkVar + " . ";
+	additionalTriples += " " + metaNodeVar + " schema:about " + orderVariableName + " . ";
 	modifiedOrderVariableName = sitelinkVar;
       } else if (sortType == 'a') {
 	sitelinkVar = orderVariableName + "-label";
-	additionalTriples = " " + orderVariableName + " qlever:uniqueLabel " + sitelinkVar + " . ";
+	additionalTriples = " " + orderVariableName + " @en@rdfs:label " + sitelinkVar + " . ";
 	modifiedOrderVariableName = sitelinkVar;
       } else {
 	modifiedOrderVariableName = orderVariableName;

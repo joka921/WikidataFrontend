@@ -73,12 +73,13 @@ function removeEmptyTriples() {
     PREFIX wds: <http://www.wikidata.org/entity/statement/>
     PREFIX wdv: <http://www.wikidata.org/value/>
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-    PREFIX wikibase: <http://wikiba.se/ontology#>
+    PREFIX wikibase: <http://wikiba.se/ontology-beta#>
     PREFIX p: <http://www.wikidata.org/prop/>
     PREFIX ps: <http://www.wikidata.org/prop/statement/>
     PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX bd: <http://www.bigdata.com/rdf#>
+    PREFIX schema: <http://schema.org/>
     PREFIX qlever: <http://qlever.informatik.uni-freiburg.de/>
     `
   sparqlHead += " SELECT";

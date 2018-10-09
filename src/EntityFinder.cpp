@@ -326,7 +326,8 @@ std::vector<WikidataEntityShort> EntityFinder::wdNamesToEntities(const std::vect
 }
 
 // ________________________________________________________________________________
-WikidataEntityShort EntityFinder::wdNamesToEntities(const std::string& el) const {
+WikidataEntityShort EntityFinder::wdNamesToEntities(const std::string& in) const {
+    auto el = ExtractWikidataIdFromUri(in);
     auto p = getIdxFromWdName(el);
     auto &idx = p.first;
     const auto &v =
@@ -398,9 +399,33 @@ EntityFinder EntityFinder::SetupFromFilename(const std::string &filename) {
   }
 }
 
+std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) const {
+  static const std::string wd = "<http://www.wikidata.org/";
+  if (uri.size() < wd.size() ||
+      !std::equal(wd.begin(), wd.end(), uri.begin())) {
+    return uri;
+  }
+  auto pos = uri.rfind('/');
+  // must be "/Qxxx>" where xxx are digits
+  if (pos > uri.size() - 4) {
+    return uri;
+  }
+  if (uri[pos + 1] != 'Q' && uri[pos + 1] != 'P') {
+    return uri;
+  }
+  if (!std::all_of(uri.begin() + pos + 2, uri.end() - 1, ::isdigit)) {
+    return uri;
+  }
+
+  std::string res = '<' + uri.substr(pos + 1);
+  std::cout << res << '\n';
+  return res;
+}
+
 // ________________________________________________________________
 template<class Archive>
 void EntityFinder::serialize(Archive& ar, const unsigned int version){
   ar &_entityVecs;
   ar &_propertyVecs;
 }
+

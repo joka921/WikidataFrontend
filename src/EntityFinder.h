@@ -46,7 +46,9 @@ class EntityFinder {
    WikidataEntityShort wdNamesToEntities(const std::string &wdNames) const;
 
  private:
-   // ______________________________________________________________________
+  std::string ExtractWikidataIdFromUri(const string& uri) const;
+
+     // ______________________________________________________________________
    EntitySearchResult convertIdxVecsToSearchResult(const IdxVec &exactIndices,
                                                    const IdxVec &prefixIndices,
                                                    const EntityVectors &v);
