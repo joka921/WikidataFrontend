@@ -99,7 +99,7 @@ std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, Se
    auto upperPrefixes = std::upper_bound(lower, v._aliases.end(), prefix, upperBoundPrefixesPred);
 
   // upper bound for the exact matches
-   auto upperExact = std::lower_bound(lower, upperPrefixes, prefix + '\0', boundPred);
+   auto upperExact = std::lower_bound(lower, upperPrefixes, prefix + ' ', boundPred);
    if (upperExact != v._aliases.end() && upperExact->first == prefix)
    {
      upperExact++;
@@ -238,26 +238,24 @@ std::vector<WikidataEntity> EntityFinder::wdNamesToEntities(const std::vector<st
 }
 
 // ________________________________________________________________________________
-WikidataEntity EntityFinder::wdNamesToEntities(const std::string& in) const {
-    auto el = ExtractWikidataIdFromUri(in);
-    auto p = getIdxFromWdName(el);
-    auto &idx = p.first;
-    const auto &v =
-        p.second == EntityType::Property ? _propertyVecs : _subjectVecs;
-    // default values which make sense for everything that is NOT a
-    // wikidata-entity
-    std::string wdName = "";
-    
-    std::string name = el;
-    std::string desc = "";
-    unsigned int numSitelinks = 0;
-    if (v._entityToIdx.count(idx)) {
-      idx = v._entityToIdx.at(idx);
-      if (idx <= v._entities.size()) {
-        return v._entities[idx];
-      }
+WikidataEntity EntityFinder::wdNamesToEntities(const std::string &in) const {
+  auto el = ExtractWikidataIdFromUri(in);
+  auto p = getIdxFromWdName(el);
+  auto &idx = p.first;
+  const auto &v =
+      p.second == EntityType::Property ? _propertyVecs : _subjectVecs;
+
+  // if we find the entity in our data structure, return its information
+  if (v._entityToIdx.count(idx)) {
+    idx = v._entityToIdx.at(idx);
+    if (idx <= v._entities.size()) {
+      return v._entities[idx];
     }
-    return WikidataEntity(wdName, name, desc, numSitelinks);
+  }
+
+  // no corresponding entity found,
+  // return dummy that only has a readable name
+  return WikidataEntity("", el, "", 0);
 }
 
 // ______________________________________________________________________________
@@ -304,19 +302,24 @@ EntityFinder EntityFinder::SetupFromFilePrefix(const std::string &prefix) {
 }
 
 std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) const {
+
+  // entity has to start with <http...
   static const std::string wd = "<http://www.wikidata.org/";
   if (uri.size() < wd.size() ||
       !std::equal(wd.begin(), wd.end(), uri.begin())) {
     return uri;
   }
+
   auto pos = uri.rfind('/');
   // must be "/Qxxx>" where xxx are digits
   if (pos > uri.size() - 4) {
     return uri;
   }
+
   if (uri[pos + 1] != 'Q' && uri[pos + 1] != 'P') {
     return uri;
   }
+
   if (!std::all_of(uri.begin() + pos + 2, uri.end() - 1, ::isdigit)) {
     return uri;
   }
