@@ -14,30 +14,13 @@ using json = nlohmann::json;
 std::string ServerUtils::entitiesToJson(const EntitySearchResult& entities, size_t num) {
   json j;
   j["entities"] = entities.entities;
-  return j;
-  /*
-  std::stringstream stream;
-  {
-    cereal::JSONOutputArchive archive(stream);
-    archive(cereal::make_nvp("entities", entities.entities));
-  }
-
-  return stream.str();
-   */
+  return j.dump();
 }
 // _______________________________________________________________
 std::string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntityShort>>& entities, size_t num) {
   json j;
   j["entities"] = entities;
-  return j;
-  /*std::stringstream stream;
-  {
-    cereal::JSONOutputArchive archive(stream);
-    archive(CEREAL_NVP(entities));
-  }
-
-  return stream.str();
-   */
+  return j.dump();
 }
 
 // _______________________________________________________________

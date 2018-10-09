@@ -89,7 +89,7 @@ function removeEmptyTriples() {
     c = checkboxes[c];
     // javascript thing: with c.checked we verify that we indeed have found a
     // checkbox and avoid type errors
-    var currentVariableName = c.checked ? c.parentNode.parentNode.getAttribute("_wdName") : "";
+    var currentVariableName = c.checked ? c.parentNode.parentNode.getAttribute("wdName") : "";
 
     if (c.checked == true &&usedVariables[currentVariableName] == true) {
       sparqlHead += " "  + currentVariableName;
@@ -137,7 +137,7 @@ function executeSparqlQuery(query, selectedArray) {
     // TODO: not- hardcoded port (what is the easiest way ??)
     var orderSettings = determineSettingString(selectedArray);
     query += orderSettings[1];
-    var url = "http://" + host + orderSettings[0] +  "?r=" + escape(query);
+    var url = "http://" + host +  "?r=" + escape(query);
     //url=escape(url);
     console.log(url);
     $.getJSON(url, function(data) {
@@ -203,7 +203,8 @@ function showResults(json, basename) {
       var cssClass = "resLineSubject";
       $("#" + rId).append("<td id=\"" + eId + "\"></td>");
       showSingleEntity(eId, el);
-      //var text = el["_wdName"] + "\n" + el["name"] + "\n" + el["description"];
+      //var text = el["
+        // wdName"] + "\n" + el["name"] + "\n" + el["description"];
         //console.log(text);
       //$("#" + eId).text(text);
       //$("#wdDesc" + basename + i).text(retJson[i]["desc"]);
@@ -314,7 +315,7 @@ function handleEnterEscape(ev) {
   }
 }
 
-/* register that the variable with name "_wdName" is now used in the triple
+/* register that the variable with name "wdName" is now used in the triple
  * subject, property or object with id "targetId". Necessary for correctly
  * renaming of variables which are already in use */
 function addVariableUsage(wdName, targetId) {
@@ -324,7 +325,7 @@ function addVariableUsage(wdName, targetId) {
   variableUsages[wdName].push(targetId);
 }
 
-/* register that variable with name "_wdName" is no longer used in tripe sub,
+/* register that variable with name "wdName" is no longer used in tripe sub,
  * pred or obj with id "targetId". Necessary for correct renaming of variables
  * which are already in use */
 function removeVariableUsage(wdName, targetId) {
@@ -366,7 +367,7 @@ function showSingleEntity(parentId, entity) {
                                "class=\"" + cssClass + "\" " +
                                " draggable=\"true\" ondragstart=\"drag(event)\"" +
                                "ondragend=\"endDrag(event)\""  +
-                               "_wdName=\"" + entity["wdName"] + "\" readableName=\"" + entity["name"] + "\"" +
+                               "wdName=\"" + entity["wdName"] + "\" readableName=\"" + entity["name"] + "\"" +
                                "wdType=\"" + entity["type"] + "\""  +
                                "description=\"" + entity["description"] +"\">");
   parentId = newId
@@ -374,7 +375,7 @@ function showSingleEntity(parentId, entity) {
   var nameId = parentId + "nm";
   var descId = parentId + "desc";
   $("#" + parentId).append("<span class=\"entityName\" id=\"" + nameId +"\"></span>");
-  $("#" + parentId).append("<span class=\"_wdName\" id=\"" + wdId +"\"></span>");
+  $("#" + parentId).append("<span class=\"wdName\" id=\"" + wdId +"\"></span>");
   $("#" + parentId).append("<div class=\"entityDescription\" id=\"" + descId +"\"></div>");
   
   

@@ -98,10 +98,11 @@ class WikidataEntityShort {
 // convert a WikidataEntityShort to JSON
 inline void to_json(json &j, const WikidataEntityShort &ent) {
   j = json();
-  j["_wdName"] = ent._wdName;
+  j["wdName"] = ent._wdName;
   j["name"] = ent._readableName;
   j["description"] = ent._description;
   j["type"] = entityTypeToNumeric(ent._type);
+  j["numSitelinks"] = ent._numSitelinks;
 }
 
 #endif  // _WIKIDATA_ENTITY_H
