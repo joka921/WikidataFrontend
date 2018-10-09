@@ -351,7 +351,6 @@ std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) const {
   }
 
   std::string res = '<' + uri.substr(pos + 1);
-  std::cout << res << '\n';
   return res;
 }
 
