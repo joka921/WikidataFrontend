@@ -22,24 +22,24 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   std::string line;
 
   while (std::getline(file, line)) {
-    auto entity = WikidataEntity(line);
+    auto entity = WikidataEntityParse(line);
     // Determine whether this is a property (P... or a entity (Q...)
     // and determine the correct data structures to store the data
-    auto &v = WikidataEntity::IsPropertyName(entity.name) ? _propertyVecs
+    auto &v = WikidataEntityParse::isPropertyName(entity._wdName) ? _propertyVecs
                                                           : _entityVecs;
     // push internal name (Q42, P31 etc.) and number of sitelinks
-    v.wdNameVec.push_back(entity.name);
-    v.numSitelinkVec.push_back(entity.numSitelinks);
+    v.wdNameVec.push_back(entity._wdName);
+    v.numSitelinkVec.push_back(entity._numSiteLinks);
 
-    if (entity.aliases.size() > 0) {
+    if (entity._aliases.size() > 0) {
       // the first alias is the actual name of the entity
-      v.nameVec.push_back(entity.aliases[0]);
+      v.nameVec.push_back(entity._aliases[0]);
     } else {
       v.nameVec.push_back("No readable name");
     }
 
     // push all aliases of the entity and the index of the current entity
-    for ( auto& el : entity.aliases) {
+    for ( auto& el : entity._aliases) {
       std::transform(el.begin(), el.end(), el.begin(), ::tolower);
       v.aliasVec.push_back(std::make_pair(el, v.wdNameVec.size() - 1));
     }
@@ -348,8 +348,8 @@ WikidataEntityShort EntityFinder::wdNamesToEntities(const std::string& el) const
         desc = v.descVec[idx];
         numSitelinks = v.numSitelinkVec[idx];
 
-        // compose wdName in the canonical "internal" form (<Q42> or <P31>)
-	wdName = "<" + entityTypeToString(p.second) + std::to_string(wdIdx) + ">";
+        // compose _wdName in the canonical "internal" form (<Q42> or <P31>)
+	wdName = "<" + entityTypeToCharacter(p.second) + std::to_string(wdIdx) + ">";
       }
     }
     return WikidataEntityShort(wdName, name, desc, numSitelinks);

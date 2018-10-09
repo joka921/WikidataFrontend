@@ -1,53 +1,40 @@
-#include "WikidataEntity.h"
+#include "WikidataEntityParse.h"
 
 // _____________________________________________________________________
-WikidataEntity::WikidataEntity(const std::string& line) {
+WikidataEntityParse::WikidataEntityParse(const std::string& line) {
 
   auto pos = line.find("\t");
-  name = line.substr(0, pos);
+  _wdName = line.substr(0, pos);
   auto newpos = line.find("\t", pos + 1);
-  numSitelinks = std::stoi(line.substr(pos + 1, newpos - pos));
+  _numSiteLinks = std::stoi(line.substr(pos + 1, newpos - pos));
   pos = newpos;
   while (newpos != std::string::npos) {
     newpos = line.find("\t", pos + 1);
     auto alias = line.substr(pos + 1, newpos - pos);
-    aliases.push_back(alias);
+    _aliases.push_back(alias);
     pos = newpos;
   }
 }
 
 void to_json(json &j, const WikidataEntityShort &ent) {
   j = json();
-  j["wdName"] = ent.wdName;
-  j["name"] = ent.name;
-  j["description"] = ent.description;
-  j["type"] = EntityTypeToString(ent.type);
+  j["_wdName"] = ent._wdName;
+  j["name"] = ent._readableName;
+  j["description"] = ent._description;
+  j["type"] = entityTypeToNumeric(ent._type);
 }
 
-// ____________________________________________________
-json WikidataEntityShort::nestedVecToArray(
-    const std::vector<std::vector<WikidataEntityShort>> &vec) {
-  return vec;
-}
-
-// Converter Function
-std::string EntityTypeToString(const EntityType& type) {
-  if (type == EntityType::Subject) {
-    return "0";
-  }
-  return "1";
-}
 
 // _____________________________________________________________________________
 void WikidataEntityShort::sortVec(std::vector<std::vector<WikidataEntityShort>>& vec, size_t orderVarIdx, OrderType type, bool asc) {
   // numSitelinks as default case
   // TODO: make absolutely exception safe
   auto sortPredSitelinks = [orderVarIdx] (const std::vector<WikidataEntityShort>& v1, const std::vector <WikidataEntityShort>& v2) 
-                                       { return v1[orderVarIdx].numSitelinks < v2[orderVarIdx].numSitelinks;};
+                                       { return v1[orderVarIdx]._numSitelinks < v2[orderVarIdx]._numSitelinks;};
   auto sortPredNumeric = [orderVarIdx] (const std::vector<WikidataEntityShort>& v1, const std::vector <WikidataEntityShort>& v2) 
-                                       { return literalToInt(v1[orderVarIdx].name) < literalToInt(v2[orderVarIdx].name);};
+                                       { return literalToInt(v1[orderVarIdx]._readableName) < literalToInt(v2[orderVarIdx]._readableName);};
   auto sortPredAlphabetical = [orderVarIdx] (const std::vector<WikidataEntityShort>& v1, const std::vector <WikidataEntityShort>& v2) 
-                                       { return v1[orderVarIdx].name < v2[orderVarIdx].name;};
+                                       { return v1[orderVarIdx]._readableName < v2[orderVarIdx]._readableName;};
 
   if (type == OrderType::NumSitelinks) {
     if (asc) {
@@ -90,6 +77,6 @@ int WikidataEntityShort::literalToInt(const std::string& str) {
 /*
 template<class Archive>
 void WikidataEntityShort::serialize(Archive& ar, std::uint32_t const version) {
-  ar(wdName, name, description, type);
+  ar(_wdName, name, description, type);
 }
 */

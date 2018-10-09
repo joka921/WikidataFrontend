@@ -13,7 +13,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/utility.hpp>
 
-#include "WikidataEntity.h"
+#include "WikidataEntityParse.h"
 #include "EntitySearchResult.h"
 
 enum class SearchMode {

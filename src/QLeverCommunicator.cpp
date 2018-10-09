@@ -54,8 +54,7 @@ std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
     WikidataEntityShort::sortVec(entities, settings.orderIdx, settings.type, settings.asc);
   }
   if (entities.size() > 20) entities.resize(20);
-  j["res"] = WikidataEntityShort::nestedVecToArray(entities);
-  std::cout << j.dump(4);
+  j["res"] = entities;
   return j.dump();
 }
 

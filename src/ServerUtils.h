@@ -6,7 +6,7 @@
 #include <utility>
 
 
-#include "WikidataEntity.h"
+#include "WikidataEntityParse.h"
 #include "EntityFinder.h"
 #include "EntitySearchResult.h"
 

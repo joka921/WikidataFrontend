@@ -4,10 +4,10 @@ add_library(SearchServer
 	    QLeverResult.h ServerUtils.h
             EntityFinder.cpp     
 	    QLeverCommunicator.cpp  SearchServer.cpp  
-	    SearchServerMainTest.cpp  WikidataEntity.cpp
+	    SearchServerMainTest.cpp WikidataEntityParse.cpp
             EntityFinder.h
 	    QLeverCommunicator.h SearchServer.h  
-	    ServerUtils.cpp WikidataEntity.h
+	    ServerUtils.cpp WikidataEntityParse.h
 	    )
 #target_link_libraries(index parser ${STXXL_LIBRARIES})
 

@@ -1,7 +1,7 @@
 #ifndef _ENTITY_SEARCH_RESULT_H
 #define _ENTITY_SEARCH_RESULT_H
 
-#include "WikidataEntity.h"
+#include "WikidataEntityParse.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>

@@ -6,10 +6,16 @@
 
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
+#include <nlohmann/json.hpp>
 
+using json = nlohmann::json;
 
 // ______________________________________________________________________________
 std::string ServerUtils::entitiesToJson(const EntitySearchResult& entities, size_t num) {
+  json j;
+  j["entities"] = entities.entities;
+  return j;
+  /*
   std::stringstream stream;
   {
     cereal::JSONOutputArchive archive(stream);
@@ -17,17 +23,21 @@ std::string ServerUtils::entitiesToJson(const EntitySearchResult& entities, size
   }
 
   return stream.str();
+   */
 }
 // _______________________________________________________________
 std::string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntityShort>>& entities, size_t num) {
-
-  std::stringstream stream;
+  json j;
+  j["entities"] = entities;
+  return j;
+  /*std::stringstream stream;
   {
     cereal::JSONOutputArchive archive(stream);
     archive(CEREAL_NVP(entities));
   }
 
   return stream.str();
+   */
 }
 
 // _______________________________________________________________
