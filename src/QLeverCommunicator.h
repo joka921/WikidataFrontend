@@ -3,7 +3,6 @@
 #include <string> 
 
 #include "HTTPClient.h"
-#include "QLeverResult.h"
 #include "ServerUtils.h"
 
 // cyclic dependency

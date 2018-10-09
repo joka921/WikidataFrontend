@@ -23,33 +23,6 @@ std::string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEn
   return j.dump();
 }
 
-// _______________________________________________________________
-std::string ServerUtils::escapeJson(const std::string& wordNarrow) {
-  string output = wordNarrow;
-  // escape "\"
-  auto illegalPos = output.find("\\");
-  while (illegalPos != output.npos) {
-    output.insert(illegalPos, "\\");
-    illegalPos = output.find("\\", illegalPos + 2);
-  }
-
-  // escape '"'
-  illegalPos = output.find("\"");
-  while (illegalPos != output.npos) {
-    output.insert(illegalPos, "\\");
-    illegalPos = output.find("\"", illegalPos + 2);
-  }
-
-  // escape '\t'
-  illegalPos = output.find("\t");
-  while (illegalPos != output.npos) {
-    output.replace(illegalPos, 1,  "\\t");
-    illegalPos = output.find("\"", illegalPos + 2);
-  }
-
-  return output;
-}
-
 // ___________________________________________________________________
 std::pair<std::string, SearchMode> ServerUtils::parseQuery(const std::string& query) {
   // we already have checked that string starts with "?t="
@@ -57,7 +30,9 @@ std::pair<std::string, SearchMode> ServerUtils::parseQuery(const std::string& qu
   // searchtype always has three chars
   auto searchtypeString = query.substr(3, 3);
   if (searchtypeString == "all") {
-    searchMode = SearchMode::All;
+    // currently nothing useful implemented for shuffling
+    // of subjects and properties
+    searchMode = SearchMode::Subjects;
   } else if (searchtypeString == "obj") {
     searchMode = SearchMode::Subjects;
   } else if (searchtypeString == "prd") {
@@ -71,34 +46,7 @@ std::pair<std::string, SearchMode> ServerUtils::parseQuery(const std::string& qu
   return std::make_pair(searchQuery, searchMode);
 }
 
-// Decode URLS from URL-Encoding to valid strings
-/*
-std::string ServerUtils::decodeURL(std::string encoded) {
-  std::string output = "";
-  auto curPos = encoded.find_first_of("%+");
-  output.append(encoded.substr(0, curPos));
-  while (curPos != encoded.npos) {
-    auto posStart = curPos;
-    if (encoded[curPos] == '+') {
-      output.append(" ");
-      posStart += 1;
-    } else {
-      // we have found another "%", decode
-      int nextByte = 0;
-      // two chars after "%" are hex string of byte
-      std::string nextByteStr = encoded.substr(curPos + 1, 2);
-      // we have to go through an int, or the results will be wrong
-      std::istringstream(nextByteStr) >> std::hex >> nextByte;
-      output.push_back(static_cast<char>(nextByte));
-      posStart = curPos + 3;
-      output.append(encoded.substr(posStart, curPos - posStart));
-    }
-    curPos = encoded.find("%", posStart);
-  }
-  std::cout << output << std::endl;
-  return output;
-}
-*/
+// apply URL decoding to the input argument
 std::string ServerUtils::decodeURL(std::string str) {
   std::string decoded;
   for (size_t i = 0; i < str.size(); ++i) {

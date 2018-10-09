@@ -22,34 +22,25 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   std::string line;
 
   while (std::getline(file, line)) {
-    auto entity = WikidataEntityParse(line);
+    auto entity = WikidataEntity(line);
     // Determine whether this is a property (P... or a entity (Q...)
     // and determine the correct data structures to store the data
-    auto &v = WikidataEntityParse::isPropertyName(entity._wdName) ? _propertyVecs
+    auto &v = WikidataEntity::isPropertyName(entity._wdName) ? _propertyVecs
                                                           : _entityVecs;
     // push internal name (Q42, P31 etc.) and number of sitelinks
-    v.wdNameVec.push_back(entity._wdName);
-    v.numSitelinkVec.push_back(entity._numSiteLinks);
-
-    if (entity._aliases.size() > 0) {
-      // the first alias is the actual name of the entity
-      v.nameVec.push_back(entity._aliases[0]);
-    } else {
-      v.nameVec.push_back("No readable name");
+    // get the description
+    auto entityShort = WikidataEntityShort(entity);
+    std::string tempDesc;
+    if (!std::getline(fileDesc, tempDesc)) {
+      tempDesc = "no description";
     }
+    entityShort._description = tempDesc;
+    v._entities.push_back(std::move(entityShort));
 
     // push all aliases of the entity and the index of the current entity
     for ( auto& el : entity._aliases) {
       std::transform(el.begin(), el.end(), el.begin(), ::tolower);
-      v.aliasVec.push_back(std::make_pair(el, v.wdNameVec.size() - 1));
-    }
-
-    // get the description
-    std::string tempDesc;
-    if (std::getline(fileDesc, tempDesc)) {
-      v.descVec.push_back(std::move(tempDesc));
-    } else {
-      v.descVec.push_back("no description");
+      v._aliases.push_back(std::make_pair(el, v._entities.size() - 1));
     }
   }
 
@@ -57,8 +48,8 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   auto sortPred = [](const std::pair<std::string, unsigned>&  p1,
                      const std::pair<std::string, unsigned>&  p2) {
      return p1.first < p2.first;};
-  std::sort(_entityVecs.aliasVec.begin(), _entityVecs.aliasVec.end(), sortPred);
-  std::sort(_propertyVecs.aliasVec.begin(), _propertyVecs.aliasVec.end(),
+  std::sort(_entityVecs._aliases.begin(), _entityVecs._aliases.end(), sortPred);
+  std::sort(_propertyVecs._aliases.begin(), _propertyVecs._aliases.end(),
             sortPred);
 
   // Set up the "translation indices" for the Q... entities
@@ -68,19 +59,21 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
   for (auto vPtr : vecs) {
     auto &v = *vPtr;
     size_t maxIdxEntity = 0;
-    for (const auto &el : v.wdNameVec) {
-      size_t idx = getIdxFromWdName(el).first;
+    for (const auto &el : v._entities) {
+      const auto& wd = el._wdName;
+      size_t idx = getIdxFromWdName(wd).first;
       maxIdxEntity = std::max(maxIdxEntity, idx);
     }
 
     // use an array with empty value to guarantee O(1) access
-    v.EntityToIdxVec.resize(maxIdxEntity + 1);
-    std::fill(v.EntityToIdxVec.begin(), v.EntityToIdxVec.end(), -1);
+    v._entityToIdx.resize(maxIdxEntity + 1);
+    std::fill(v._entityToIdx.begin(), v._entityToIdx.end(), -1);
 
     size_t num = 0;
-    for (const auto &el : v.wdNameVec) {
-      size_t idx = getIdxFromWdName(el).first;
-      v.EntityToIdxVec.at(idx) = num;
+    for (const auto &el : v._entities) {
+      const auto& wd = el._wdName;
+      size_t idx = getIdxFromWdName(wd).first;
+      v._entityToIdx.at(idx) = num;
       num += 1;
     }
     v.shrink_to_fit();
@@ -113,14 +106,14 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
   // first find matches for the prefixes
   // lower bound
   auto res =
-      std::lower_bound(v.aliasVec.begin(), v.aliasVec.end(), prefix, boundPred);
-  if (res == v.aliasVec.end() ||
+      std::lower_bound(v._aliases.begin(), v._aliases.end(), prefix, boundPred);
+  if (res == v._aliases.end() ||
       !std::equal(prefix.begin(), prefix.end(), (*res).first.begin())) {
     ret.totalResults = 0;
     return ret;
    }
 
-   auto upper = std::upper_bound(res, v.aliasVec.end(), prefix, upperBoundPred);
+   auto upper = std::upper_bound(res, v._aliases.end(), prefix, upperBoundPred);
    // upper bound for the exact matches
    auto upperExact = std::lower_bound(res, upper, prefix + ' ', boundPred);
    auto findTime = std::chrono::high_resolution_clock::now();
@@ -141,57 +134,6 @@ EntitySearchResult EntityFinder::findEntitiesByPrefix( const std::string& prefix
 
    auto sortedIndices = rankResults(res, upperExact, upper, v);
 
-   /*
-   // format is <numberOfSitelinks, Idx>
-   // make sorting faster
-   std::vector<std::pair<size_t,size_t>> onlyIdxVec;
-   std::vector<std::pair<size_t,size_t>> onlyIdxVecExact;
-   onlyIdxVec.reserve(upper - upperExact);
-   onlyIdxVecExact.reserve(upperExact - res);
-
-   // setup sitelink/idx vector for exact matches
-   while (res != upperExact) {
-     auto idx = (*res).second;
-     onlyIdxVecExact.push_back(std::make_pair((*sVec)[idx], idx));
-     res++;
-   }
-   // .. and for prefix matches
-   while (res != upper) {
-     auto idx = (*res).second;
-     onlyIdxVec.push_back(std::make_pair((*sVec)[idx], idx));
-     res++;
-   }
-
-   // predicate for sorting according to the sitelink score
-   auto sortPred = [](const std::pair<size_t, size_t>& w1, const
-   std::pair<size_t, size_t>& w2) { return w1.first > w2.first;};
-   // predicate for the elimination of equal
-   auto equalPred = [](const std::pair<size_t, size_t>& w1, const
-   std::pair<size_t, size_t>& w2) { return w1.second == w2.second;};
-   // reversed order, because we want high number of sitelinks first
-   std::sort(onlyIdxVec.begin(), onlyIdxVec.end(), sortPred);
-   std::sort(onlyIdxVecExact.begin(), onlyIdxVecExact.end(), sortPred);
-   auto upperUnique = onlyIdxVec.end(); //std::unique(onlyIdxVec.begin(),
-   onlyIdxVec.end(), equalPred); auto upperUniqueExact = onlyIdxVecExact.end();
-   //std::unique(onlyIdxVecExact.begin(), onlyIdxVecExact.end(), equalPred);
-   auto uniqueSize = upperUnique - onlyIdxVec.begin();
-   auto uniqueSizeExact = upperUniqueExact - onlyIdxVecExact.begin();
-   */
-
-   /*
-   for (int i = 0; i < 40 && i < uniqueSizeExact; ++i) {
-     auto idx = onlyIdxVecExact[i].second;
-     auto numLinks = onlyIdxVecExact[i].first;
-     ret.entities.push_back(WikidataEntityShort((*wdVec)[idx], (*nVec)[idx],
-   (*dVec)[idx], numLinks));
-   }
-   for (int i = ret.entities.size(); i < 40 && i < uniqueSize; ++i) {
-     auto idx = onlyIdxVec[i].second;
-     auto numLinks = onlyIdxVec[i].first;
-     ret.entities.push_back(WikidataEntityShort((*wdVec)[idx], (*nVec)[idx],
-   (*dVec)[idx], numLinks));
-   }
-   */
    ret = convertIdxVecsToSearchResult(sortedIndices.first, sortedIndices.second,
                                       v);
    ret.totalResults = numPrefixMatches;
@@ -213,14 +155,12 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
   for (int i = 0; i < RESULTS_TO_SEND && i < exactIndices.size(); ++i) {
     auto idx = exactIndices[i].second;
     auto numLinks = exactIndices[i].first;
-    ret.entities.push_back(WikidataEntityShort(v.wdNameVec[idx], v.nameVec[idx],
-                                               v.descVec[idx], numLinks));
+    ret.entities.push_back(v._entities[idx]);
   }
   for (int i = ret.entities.size(); i < 40 && i < prefixIndices.size(); ++i) {
     auto idx = prefixIndices[i].second;
     auto numLinks = prefixIndices[i].first;
-    ret.entities.push_back(WikidataEntityShort(v.wdNameVec[idx], v.nameVec[idx],
-                                               v.descVec[idx], numLinks));
+    ret.entities.push_back(v._entities[idx]);
   }
   return ret;
  }
@@ -235,17 +175,18 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
    IdxVec onlyIdxVecExact;
    onlyIdxVec.reserve(upperPrefixes - upperExact);
    onlyIdxVecExact.reserve(upperExact - lower);
+   const auto& ent = v._entities;
 
    // setup sitelink/idx vector for exact matches
    while (lower != upperExact) {
      auto idx = (*lower).second;
-     onlyIdxVecExact.push_back(std::make_pair(v.numSitelinkVec[idx], idx));
+     onlyIdxVecExact.push_back(std::make_pair(ent[idx]._numSitelinks, idx));
      lower++;
    }
    // .. and for prefix matches
    while (lower != upperPrefixes) {
      auto idx = (*lower).second;
-     onlyIdxVec.push_back(std::make_pair(v.numSitelinkVec[idx], idx));
+     onlyIdxVec.push_back(std::make_pair(ent[idx]._numSitelinks, idx));
      lower++;
    }
 
@@ -339,18 +280,10 @@ WikidataEntityShort EntityFinder::wdNamesToEntities(const std::string& in) const
     std::string name = el;
     std::string desc = "";
     unsigned int numSitelinks = 0;
-    if (idx < v.EntityToIdxVec.size()) {
-      // convert from the "wikidata-name-idx" to the internal (unique) index
-      auto wdIdx = idx;
-      idx = v.EntityToIdxVec[idx];
-      if (idx <= v.nameVec.size()) {
-        // if there is an entity matching, then also include name and description
-        name = v.nameVec[idx];
-        desc = v.descVec[idx];
-        numSitelinks = v.numSitelinkVec[idx];
-
-        // compose _wdName in the canonical "internal" form (<Q42> or <P31>)
-	wdName = "<" + entityTypeToCharacter(p.second) + std::to_string(wdIdx) + ">";
+    if (idx < v._entityToIdx.size()) {
+      idx = v._entityToIdx[idx];
+      if (idx <= v._entities.size()) {
+        return v._entities[idx];
       }
     }
     return WikidataEntityShort(wdName, name, desc, numSitelinks);

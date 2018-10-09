@@ -13,11 +13,10 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/utility.hpp>
 
-#include "WikidataEntityParse.h"
+#include "WikidataEntity.h"
 #include "EntitySearchResult.h"
 
-enum class SearchMode {
-  All, Subjects, Properties, Invalid};
+
 
 // ___________________________________________________________
 class EntityFinder {
@@ -37,7 +36,7 @@ class EntityFinder {
    static EntityFinder SetupFromFilename(const std::string &filename);
 
    EntitySearchResult findEntitiesByPrefix(const std::string &prefix,
-                                           SearchMode mode = SearchMode::All);
+                                           SearchMode mode = SearchMode::Subjects);
 
    std::vector<std::vector<WikidataEntityShort>>
    wdNamesToEntities(const std::vector<std::vector<string>> &wdNames);
