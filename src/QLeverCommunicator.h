@@ -22,12 +22,12 @@ class QLeverCommunicator {
   // Return the result payload (json) when sending the escaped SPARQL query
   // query query to the QLever server
   std::string getRawQLeverResponse(const std::string& query);
-  std::string parseJSON(const std::string& json, const EntityFinder* finder, const QuerySettings& settings);
+  std::string parseJSON(const std::string& json, const EntityFinder* finder);
 
   public:
     QLeverCommunicator(const std::string& serverAddress, unsigned int port);
     ~QLeverCommunicator();
-    std::string GetQueryResult(const std::string& query, const EntityFinder* finder, const QuerySettings& settings);
+    std::string GetQueryResult(const std::string& query, const EntityFinder* finder);
 };
 
 #endif  // _QLEVER_COMMUNICATOR_H

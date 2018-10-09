@@ -39,8 +39,25 @@ class WikidataEntityParse {
   std::vector<string> _aliases;
   unsigned int _numSiteLinks;
   // Read from line of the entity/alias File
-  // (see README).
-  WikidataEntityParse(const string& line);
+  // (see REAME for file type description)
+  WikidataEntityParse(const std::string& line) {
+    // everything until the first tab is the wikidata name
+    auto pos = line.find("\t");
+    _wdName = line.substr(0, pos);
+
+    // until the next tab we have the number of sitelinks
+    auto newpos = line.find("\t", pos + 1);
+    _numSiteLinks = std::stoi(line.substr(pos + 1, newpos - pos));
+    pos = newpos;
+
+    // the rest are aliases (also tab-separated)
+    while (newpos != std::string::npos) {
+      newpos = line.find("\t", pos + 1);
+      auto alias = line.substr(pos + 1, newpos - pos);
+      _aliases.push_back(alias);
+      pos = newpos;
+    }
+  }
 
   // _____________________________________
   static bool isPropertyName(const std::string &name) {
@@ -72,22 +89,19 @@ class WikidataEntityShort {
   // default constructor needed for resize etc
   WikidataEntityShort() = default;
 
-  // TODO: not needed with new JSON library
-  //static json
-  //nestedVecToArray(const std::vector<std::vector<WikidataEntityShort>> &vec);
-
-  // _____________________________________________________________________________
-  // TODO: we are probably not doing the sorting here but in QLever
-  static void sortVec(std::vector<std::vector<WikidataEntityShort>>& vec, size_t orderVarIdx, OrderType type, bool asc);
-
-  string toString() {return _wdName + "\t" + _readableName + "\t" + _description;}
-
 
   // TODO: should probably not be here
   static int literalToInt(const std::string &str);
 
 };
 
-void to_json(json &j, const WikidataEntityShort &ent);
+// convert a WikidataEntityShort to JSON
+inline void to_json(json &j, const WikidataEntityShort &ent) {
+  j = json();
+  j["_wdName"] = ent._wdName;
+  j["name"] = ent._readableName;
+  j["description"] = ent._description;
+  j["type"] = entityTypeToNumeric(ent._type);
+}
 
 #endif  // _WIKIDATA_ENTITY_H

@@ -28,8 +28,7 @@ std::string QLeverCommunicator::getRawQLeverResponse(const std::string& query) {
 
 // __________________________________________________________________
 std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
-                                          const EntityFinder *finder,
-                                          const QuerySettings &settings) {
+                                          const EntityFinder *finder) {
   std::string res;
   res = "{\"status\":\"ERROR\", \"exception\":\"Error while parsing json from QLever Backend\"}";
   json j;
@@ -50,9 +49,6 @@ std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
     }
     idx++;
   }
-  if (settings.type != OrderType::None && entities.size() && settings.orderIdx <entities[0].size()) {
-    WikidataEntityShort::sortVec(entities, settings.orderIdx, settings.type, settings.asc);
-  }
   if (entities.size() > 20) entities.resize(20);
   j["res"] = entities;
   return j.dump();
@@ -60,6 +56,6 @@ std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
 
 
 // ____________________________________________________________________
-std::string QLeverCommunicator::GetQueryResult(const std::string& query, const EntityFinder* finder, const QuerySettings& settings) {
-  return parseJSON(getRawQLeverResponse(query), finder, settings);
+std::string QLeverCommunicator::GetQueryResult(const std::string& query, const EntityFinder* finder) {
+  return parseJSON(getRawQLeverResponse(query), finder);
 }

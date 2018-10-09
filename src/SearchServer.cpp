@@ -144,25 +144,11 @@ std::string SearchServer::createResponse(const std::string& req)
       auto listOfNames = ServerUtils::decodeURL(filename.substr(3));
       std::cout << listOfNames << '\n';
       auto vecOfNames = ServerUtils::split(listOfNames, ' ');
-      for (const auto& s : vecOfNames) {
-	std::cout << s << '\n';
-      }
-      //TODO: convert ALL
-      // and do this directly without detour in client
-      // TODO: probably not needed
       contentString = ServerUtils::entitiesToJson(std::vector<std::vector<WikidataEntityShort>>{_finder.wdNamesToEntities(vecOfNames)}, 100);
-    } else if (filename.substr(0, 3) == std::string("?s=")) {
-      auto remainder = filename.substr(3);
-      auto pos = remainder.find("?");
-      auto settings = ServerUtils::parseSetting(remainder.substr(0, pos));
-      std::cout << "setting string is valid? " << settings.isValid << std::endl;
-      if (settings.isValid && remainder.substr(pos, 3) == std::string("?r=")) {
-	contentType = "application/json";
-	//auto query = ServerUtils::decodeURL(remainder.substr(pos));
-	auto query = remainder.substr(3);
-	contentString = _communicator.GetQueryResult(query, &_finder, settings);
-      }
-
+    } else if (filename.substr(0, 3) == std::string("?r=")) {
+	      contentType = "application/json";
+	    auto query = filename.substr(3);
+	    contentString = _communicator.GetQueryResult(query, &_finder);
     } else {
     // redirect empty string (start page) to standard file
     if (!filename.length()) filename = "search.html";
