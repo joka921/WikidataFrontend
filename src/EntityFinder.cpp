@@ -196,36 +196,22 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
  EntityFinder::getIdxFromWdName(const std::string &wdName) {
    EntityType type = EntityType::Subject;
 
-   if (wdName.size() < 3 || wdName[0] == '"') {
-     // this is a string literal
+   if (wdName.size() < 3 || wdName[0] != '<') {
+     // this is not a valid Wikidata entity!
      return std::make_pair(size_t(-1), type);
    }
 
-   if (wdName[0] == '<') {
-     // internal format
-     if (wdName[1] == 'P') {
-       type = EntityType::Property;
-     } else if (wdName[1] == 'Q') {
-       type = EntityType::Subject;
-     } else {
-       return std::make_pair(size_t(-1), type);
-     }
-     std::stringstream s(wdName.substr(2));
-     size_t idx;
-     s >> idx;
-     return std::make_pair(idx, type);
+   if (wdName[1] == 'P') {
+     type = EntityType::Property;
+   } else if (wdName[1] == 'Q') {
+     type = EntityType::Subject;
    } else {
-     auto pos = wdName.find(':');
-     if (pos == std::string::npos || pos == wdName.size() - 1 ||
-         (wdName[pos + 1] != 'Q' && wdName[pos + 1] != 'P')) {
-       return std::make_pair(-1, type);
-     }
-     type = wdName[pos + 1] == 'Q' ? EntityType::Subject : EntityType::Property;
-     std::stringstream s(wdName.substr(pos + 2));
-     size_t idx;
-     s >> idx;
-     return std::make_pair(idx, type);
+     return std::make_pair(size_t(-1), type);
    }
+   std::stringstream s(wdName.substr(2));
+   size_t idx;
+   s >> idx;
+   return std::make_pair(idx, type);
 }
 
 // _______________________________________________________________________________
