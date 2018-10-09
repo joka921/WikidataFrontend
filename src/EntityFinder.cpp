@@ -100,7 +100,7 @@ std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, Se
 
   // upper bound for the exact matches
    auto upperExact = std::lower_bound(lower, upperPrefixes, prefix + ' ', boundPred);
-   if (upperExact != v._aliases.end() && upperExact->first == prefix)
+   if (upperExact < upperPrefixes && upperExact->first == prefix)
    {
      upperExact++;
    }
