@@ -2,6 +2,7 @@
 #define _QLEVER_COMMUNICATOR_H
 #include <string> 
 
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include "HTTPClient.h"
 #include "ServerUtils.h"
 

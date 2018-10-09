@@ -7,7 +7,7 @@ using json = nlohmann::json;
 
 // __________________________________________________________________________________
 QLeverCommunicator::QLeverCommunicator(const std::string& serverAddress, unsigned int port)
-    : _port(port), _serverAddress(serverAddress), _client([](const std::string& s) {std::cout << s << std::endl;}) {
+    :  _serverAddress(serverAddress), _port(port), _client([](const std::string& s) {std::cout << s << std::endl;}) {
     _client.InitSession();
 }
 

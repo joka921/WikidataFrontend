@@ -104,8 +104,8 @@ std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, Se
    {
      upperExact++;
    }
-   auto numPrefixMatches = upperPrefixes - lower;
-   auto numExactMatches = upperExact - lower;
+   size_t numPrefixMatches = upperPrefixes - lower;
+   size_t numExactMatches = upperExact - lower;
 
    // If we get more results than this we do not calculate the exact ranking but
    // truncate the result alphabetically
@@ -134,12 +134,12 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
   std::vector<WikidataEntity> ret;
   ret.reserve(RESULTS_TO_SEND);
   // first the exact matches
-  for (int i = 0; i < RESULTS_TO_SEND && i < exactIndices.size(); ++i) {
+  for (size_t i = 0; i < RESULTS_TO_SEND && i < exactIndices.size(); ++i) {
     auto idx = exactIndices[i].second;
     ret.push_back(v._entities[idx]);
   }
   // fill the rest with prefix matches
-  for (int i = ret.size(); i < 40 && i < prefixIndices.size(); ++i) {
+  for (size_t i = ret.size(); i < 40 && i < prefixIndices.size(); ++i) {
     auto idx = prefixIndices[i].second;
     ret.push_back(v._entities[idx]);
   }
