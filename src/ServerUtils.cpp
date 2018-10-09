@@ -10,14 +10,14 @@
 
 using json = nlohmann::json;
 
-// ______________________________________________________________________________
-std::string ServerUtils::entitiesToJson(const EntitySearchResult& entities, size_t num) {
+//_____________________________________________________________________________
+string ServerUtils::entitiesToJson(const std::vector<WikidataEntity> &entities) {
   json j;
-  j["entities"] = entities.entities;
+  j["entities"] = entities;
   return j.dump();
 }
 // _______________________________________________________________
-std::string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntityShort>>& entities, size_t num) {
+string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntity>> &entities) {
   json j;
   j["entities"] = entities;
   return j.dump();

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   std::string inputFile = argv[1];
   uint16_t port = atoi(argv[2]);
 
-  auto finder = EntityFinder::SetupFromFilename(inputFile);
+  auto finder = EntityFinder::SetupFromFilePrefix(inputFile);
   std::unique_ptr<SearchServer> server(nullptr);
   if (argc == 3) {
     server.reset(new SearchServer(std::move(finder), port));

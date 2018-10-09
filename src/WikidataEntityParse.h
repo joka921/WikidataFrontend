@@ -29,7 +29,7 @@ inline std::string entityTypeToNumeric(const EntityType &t){
 
 // Class for the metadata of a wikidata entity
 // only used during initial parsing
-class WikidataEntity {
+class WikidataEntityParse {
  public:
   // Wikidata name like "<Q42>" or "<P31>"
   string _wdName;
@@ -40,7 +40,7 @@ class WikidataEntity {
   unsigned int _numSiteLinks;
   // Read from line of the entity/alias File
   // (see REAME for file type description)
-  WikidataEntity(const std::string& line) {
+  WikidataEntityParse(const std::string& line) {
     // everything until the first tab is the wikidata name
     auto pos = line.find("\t");
     _wdName = line.substr(0, pos);
@@ -69,7 +69,7 @@ class WikidataEntity {
 // A smaller class for the meta data of a Wikidata entitye
 // Used for results of searches and queries
 // Does not need the aliases
-class WikidataEntityShort {
+class WikidataEntity {
  public:
   string _wdName;
   string _readableName;
@@ -78,20 +78,20 @@ class WikidataEntityShort {
   EntityType _type;
 
   // Constructor
-  WikidataEntityShort(const string& wdName, const string& readableName, const string& desc, unsigned int nSitelinks = 0)
+  WikidataEntity(const string& wdName, const string& readableName, const string& desc, unsigned int nSitelinks = 0)
     : _wdName(wdName), _readableName(readableName), _description(desc), _numSitelinks(nSitelinks) {
-    _type = WikidataEntity::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;}
+    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;}
 
   // default constructor needed for resize etc
-  WikidataEntityShort() = default;
+  WikidataEntity() = default;
 
   // Construct from the parsing version
-  WikidataEntityShort(const WikidataEntity& other) {
+  WikidataEntity(const WikidataEntityParse& other) {
     _wdName = other._wdName;
     _readableName = other._aliases.empty() ? "no name" : other._aliases[0];
     _description = "no description";
     _numSitelinks = other._numSiteLinks;
-    _type = WikidataEntity::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;
+    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;
   }
 
 
@@ -102,7 +102,7 @@ private:
   friend class boost::serialization::access;
   template <class Archive>
   void serialize(Archive &ar, const unsigned int version) {
-    //ar &wdNameVec;
+    (void) version;
     ar & _wdName;
     ar &_readableName;
     ar & _description;
@@ -112,8 +112,8 @@ private:
 
 };
 
-// convert a WikidataEntityShort to JSON
-inline void to_json(json &j, const WikidataEntityShort &ent) {
+// convert a WikidataEntity to JSON
+inline void to_json(json &j, const WikidataEntity &ent) {
   j = json();
   j["wdName"] = ent._wdName;
   j["name"] = ent._readableName;

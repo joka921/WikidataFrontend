@@ -136,7 +136,7 @@ std::string SearchServer::createResponse(const std::string& req)
       } else {
 	auto res = _finder.findEntitiesByPrefix(parsed.first, parsed.second);
        // get at most ten results as JSON
-       contentString = ServerUtils::entitiesToJson(res, 10);
+       contentString = ServerUtils::entitiesToJson(res);
       }
     } else if (filename.substr(0, 3) == std::string("?c=")) {
       contentType = "application/json";
@@ -144,7 +144,7 @@ std::string SearchServer::createResponse(const std::string& req)
       auto listOfNames = ServerUtils::decodeURL(filename.substr(3));
       std::cout << listOfNames << '\n';
       auto vecOfNames = ServerUtils::split(listOfNames, ' ');
-      contentString = ServerUtils::entitiesToJson(std::vector<std::vector<WikidataEntityShort>>{_finder.wdNamesToEntities(vecOfNames)}, 100);
+      contentString = ServerUtils::entitiesToJson(_finder.wdNamesToEntities(vecOfNames));
     } else if (filename.substr(0, 3) == std::string("?r=")) {
 	      contentType = "application/json";
 	    auto query = filename.substr(3);

@@ -6,9 +6,9 @@
 #include <utility>
 
 
-#include "WikidataEntity.h"
+#include "WikidataEntityParse.h"
 #include "EntityFinder.h"
-#include "EntitySearchResult.h"
+#include "EntityFinderHelpers.h"
 
 class QuerySettings {
  public:
@@ -18,8 +18,9 @@ class QuerySettings {
 };
 class ServerUtils {
  public:
-  static std::string entitiesToJson(const std::vector<std::vector<WikidataEntityShort>>& entities, size_t num);
-  static std::string entitiesToJson(const EntitySearchResult& entities, size_t num);
+  static string entitiesToJson(const std::vector<std::vector<WikidataEntity>> &entities);
+  // num = 0 means "convert all"
+  static string entitiesToJson(const std::vector<WikidataEntity> &entities);
   static std::pair<std::string, SearchMode> parseQuery(const std::string& query);
   static std::string decodeURL(std::string encoded);
   static std::pair<bool, std::string> readFile(std::string filename);

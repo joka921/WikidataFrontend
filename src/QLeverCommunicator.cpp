@@ -39,7 +39,7 @@ std::string QLeverCommunicator::parseJSON(const std::string &jsonQlever,
     return jsonQlever;
 
   auto &r = j.at("res");
-  std::vector<std::vector<WikidataEntityShort>> entities(r.size());
+  std::vector<std::vector<WikidataEntity>> entities(r.size());
   
   size_t idx = 0;
   for (auto& el : r) {
