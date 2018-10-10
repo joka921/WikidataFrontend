@@ -132,14 +132,14 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
                                            const IdxVec &prefixIndices,
                                            const EntityVectors &v) {
   std::vector<WikidataEntity> ret;
-  ret.reserve(RESULTS_TO_SEND);
+  ret.reserve(_resultsToSend);
   // first the exact matches
-  for (size_t i = 0; i < RESULTS_TO_SEND && i < exactIndices.size(); ++i) {
+  for (size_t i = 0; i < _resultsToSend && i < exactIndices.size(); ++i) {
     auto idx = exactIndices[i]._idx;
     ret.push_back(v._entities[idx]);
   }
   // fill the rest with prefix matches
-  for (size_t i = ret.size(); i < 40 && i < prefixIndices.size(); ++i) {
+  for (size_t i = 0; i + exactIndices.size() < _resultsToSend && i < prefixIndices.size(); ++i) {
     auto idx = prefixIndices[i]._idx;
     ret.push_back(v._entities[idx]);
   }

@@ -58,6 +58,52 @@ TEST(EntityFinderTest, rankResults) {
     // first the writer and then the perfume
     ASSERT_EQ(1, prefix2[0]._idx);
     ASSERT_EQ(0, prefix2[1]._idx);
+}
+
+// ________________________________________________________________________________
+TEST(EntityFinderTest, convertIdxVecs) {
+    EntityVectors v;
+    // create two entities
+    v._entities.emplace_back("Q500", "Douglas", "perfume", 60);
+    v._entities.emplace_back("Q42", "Douglas Adams", "some writer", 120);
+
+    // one alias for the perfume
+    v._aliases.emplace_back("Douglas", 0);
+    // two aliases for the writer
+    v._aliases.emplace_back("Douglas", 1);
+    v._aliases.emplace_back("Douglas Adams", 1);
+    // another alias for the perfume
+    v._aliases.emplace_back("Douglas Perfume", 0);
+
+
+    EntityFinder::IdxVec exactMatches;
+    exactMatches.emplace_back(120, 1);
+    exactMatches.emplace_back(60, 0);
+    EntityFinder::IdxVec prefixMatches;
+    prefixMatches.emplace_back(120, 1);
+    prefixMatches.emplace_back(60, 0);
+
+    EntityFinder finder;
+    auto converted = finder.convertIdxVecsToSearchResult(exactMatches, prefixMatches, v);
+    ASSERT_EQ(4, converted.size());
+    ASSERT_EQ(std::string("Q42"), converted[0]._wdName);
+    ASSERT_EQ(std::string("Douglas Adams"), converted[0]._readableName);
+    ASSERT_EQ(std::string("Q500"), converted[1]._wdName);
+    ASSERT_EQ(std::string("Douglas"), converted[1]._readableName);
+    ASSERT_EQ(std::string("Q42"), converted[2]._wdName);
+    ASSERT_EQ(std::string("Douglas Adams"), converted[2]._readableName);
+
+    // check limit
+    finder._resultsToSend = 3;
+    converted = finder.convertIdxVecsToSearchResult(exactMatches, prefixMatches, v);
+    ASSERT_EQ(std::string("Q42"), converted[0]._wdName);
+    ASSERT_EQ(3, converted.size());
+    ASSERT_EQ(std::string("Q42"), converted[0]._wdName);
+    ASSERT_EQ(std::string("Douglas Adams"), converted[0]._readableName);
+    ASSERT_EQ(std::string("Q500"), converted[1]._wdName);
+    ASSERT_EQ(std::string("Douglas"), converted[1]._readableName);
+    ASSERT_EQ(std::string("Q42"), converted[2]._wdName);
+    ASSERT_EQ(std::string("Douglas Adams"), converted[2]._readableName);
 
 
 }

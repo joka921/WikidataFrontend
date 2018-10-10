@@ -80,6 +80,7 @@ class EntityFinder {
   std::vector<WikidataEntity> convertIdxVecsToSearchResult(const IdxVec &exactIndices,
                                                               const IdxVec &prefixIndices,
                                                               const EntityVectors &v);
+  FRIEND_TEST(EntityFinderTest, convertIdxVecs);
   // Compute the ranking for the given search results and eliminate duplicates
   // lower is the lower bound iterator for the matches,
   // upperExact is the upper bound iterator for the exact matches
@@ -90,7 +91,7 @@ class EntityFinder {
                                          const EntityVectors &v);
   FRIEND_TEST(EntityFinderTest, rankResults);
   // Number of top results that are actually returned from the findEntitiesByPrefix functions
-  const size_t RESULTS_TO_SEND = 40;
+  size_t _resultsToSend = 40;
 
   // Helper function for Serialization
   friend class boost::serialization::access;
