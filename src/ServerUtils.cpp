@@ -4,8 +4,6 @@
 #include <sstream>
 #include <fstream>
 
-#include <cereal/archives/json.hpp>
-#include <cereal/types/vector.hpp>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

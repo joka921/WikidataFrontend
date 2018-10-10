@@ -135,12 +135,12 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
   ret.reserve(RESULTS_TO_SEND);
   // first the exact matches
   for (size_t i = 0; i < RESULTS_TO_SEND && i < exactIndices.size(); ++i) {
-    auto idx = exactIndices[i].second;
+    auto idx = exactIndices[i]._idx;
     ret.push_back(v._entities[idx]);
   }
   // fill the rest with prefix matches
   for (size_t i = ret.size(); i < 40 && i < prefixIndices.size(); ++i) {
-    auto idx = prefixIndices[i].second;
+    auto idx = prefixIndices[i]._idx;
     ret.push_back(v._entities[idx]);
   }
   return ret;
@@ -161,26 +161,26 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
    // setup sitelink/idx vector for exact matches
    while (lower != upperExact) {
      auto idx = (*lower).second;
-     onlyIdxVecExact.push_back(std::make_pair(ent[idx]._numSitelinks, idx));
+     onlyIdxVecExact.emplace_back(ent[idx]._numSitelinks, idx);
      lower++;
    }
    // .. and for prefix matches
    while (lower != upperPrefixes) {
      auto idx = (*lower).second;
-     onlyIdxVec.push_back(std::make_pair(ent[idx]._numSitelinks, idx));
+     onlyIdxVec.emplace_back(ent[idx]._numSitelinks, idx);
      lower++;
    }
 
    // predicate for sorting according to the sitelink score (higher score first)
-   auto sortPred = [](const std::pair<size_t, size_t> &w1,
-                      const std::pair<size_t, size_t> &w2) {
-     return w1.first != w2.first ? w1.first > w2.first : w1.second > w2.second;
+   auto sortPred = [](const IdxVecEntry &w1,
+                      const IdxVecEntry &w2) {
+     return w1._numSitelinks != w2._numSitelinks ? w1._numSitelinks > w2._numSitelinks : w1._idx > w2._idx;
    };
 
    // predicate for the elimination of duplicates
-   auto equalPred = [](const std::pair<size_t, size_t> &w1,
-                       const std::pair<size_t, size_t> &w2) {
-     return w1.second == w2.second;
+   auto equalPred = [](const IdxVecEntry &w1,
+                       const IdxVecEntry &w2) {
+     return w1._idx == w2._idx;
    };
 
    std::sort(onlyIdxVec.begin(), onlyIdxVec.end(), sortPred);

@@ -1,0 +1,2 @@
+add_executable(EntityFinderTest EntityFinderTest.cpp)
+target_link_libraries(EntityFinderTest SearchServer gtest_main)

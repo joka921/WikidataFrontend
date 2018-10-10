@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include <gtest/gtest.h>
 
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -22,7 +23,13 @@
 class EntityFinder {
 
  public:
-   using IdxVec = std::vector<std::pair<size_t, size_t>>;
+   // helper struct used in ranking
+   struct IdxVecEntry {
+     size_t _numSitelinks;
+     size_t _idx;
+     IdxVecEntry(size_t numLinks, size_t idx): _numSitelinks(numLinks), _idx(idx) {}
+   };
+   using IdxVec = std::vector<IdxVecEntry>;
    using AliasIt =
        std::vector<std::pair<std::string, size_t>>::const_iterator;
 
@@ -81,6 +88,7 @@ class EntityFinder {
   std::pair<IdxVec, IdxVec> rankResults(AliasIt lower, AliasIt upperExact,
                                          AliasIt upperPrefixes,
                                          const EntityVectors &v);
+  FRIEND_TEST(EntityFinderTest, rankResults);
   // Number of top results that are actually returned from the findEntitiesByPrefix functions
   const size_t RESULTS_TO_SEND = 40;
 

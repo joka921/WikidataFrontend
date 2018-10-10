@@ -34,8 +34,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 ################################
 # GTEST
 ################################
-#add_subdirectory(third_party/googletest/googletest)
-#include_directories(third_party/googletest/googletest/include)
+add_subdirectory(third_party/googletest/googletest)
+include_directories(third_party/googletest/googletest/include)
 
 ################################
 # NLOHNMANN-JSON 
@@ -43,11 +43,6 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
 # Header only, nothing to include
 include_directories(third_party/json/include/)
 
-################################
-# CEREAL
-################################
-#add_subdirectory(third_party/cereal)
-include_directories(third_party/cereal/include)
 
 ################################
 # HTTP 
@@ -90,6 +85,10 @@ configure_file(src/web/search3.js search3.js)
 add_executable(WikidataFrontendMain SearchServerMain.cpp)
 target_link_libraries(WikidataFrontendMain SearchServer
   ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} httpclient ${CURL_LIBRARIES})
+
+add_subdirectory(test)
+enable_testing()
+add_test(EntityFinderTest test/EntityFinderTest)
 
 
 #enable_testing()

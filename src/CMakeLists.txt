@@ -9,5 +9,7 @@ add_library(SearchServer
 	    QLeverCommunicator.h SearchServer.h  
 	    ServerUtils.cpp WikidataEntityParse.h
 	    )
+
+target_link_libraries(SearchServer  ${Boost_LIBRARIES} httpclient ${CURL_LIBRARIES})
 #target_link_libraries(index parser ${STXXL_LIBRARIES})
 
