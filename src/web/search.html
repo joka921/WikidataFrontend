@@ -11,6 +11,7 @@
     <script src="./search.js"></script>
     <script src="./search2.js"></script>
     <script src="./search3.js"></script>
+    <script src="./queryHandling.js"></script>
   </head>
   <body>
     <div class="normal" id="heading">QLever-GUI (Pre-Pre-Pre-Alpha)</div>
@@ -34,7 +35,7 @@
       <div id="triples">
         <div class="triple" id="variables">
           <div class="variable" id="x0" wdName="?x0" draggable="true"
-            ondragstart="drag(event)" ondblclick="renameVariable(this)"
+            ondragstart="drag(event)" ondblclick="showRenamingTexfield(this)"
             readableName="?x0" wdType="2">  
             <div id="x0Label">?x0</div>
             <input id="x0Input" class="variableRenamer"
@@ -49,7 +50,7 @@
             </div>
           </div>
           <div class="variable" id="x1" wdName="?x1" draggable="true"
-            ondragstart="drag(event)" ondblclick="renameVariable(this)" readableName="?x1" wdType="2" > 
+               ondragstart="drag(event)" ondblclick="showRenamingTexfield(this)" readableName="?x1" wdType="2" >
             <div id="x1Label">?x1</div>
             <input id="x1Input" class="variableRenamer"
                                 onchange="restrictVariableRename(this)"
@@ -61,7 +62,7 @@
             <input type="checkbox" id="selectedX1" value="?x1" onchange="handleSelectCheckbox(this)">
             </div>
           </div>
-          <div class="variable" id="x2" wdName="?x2" draggable="true" ondragstart="drag(event)"  ondblclick="renameVariable(this)" readableName="?x2"  wdType="2" >
+          <div class="variable" id="x2" wdName="?x2" draggable="true" ondragstart="drag(event)" ondblclick="showRenamingTexfield(this)" readableName="?x2" wdType="2" >
             <div id="x2Label">?x2</div>
             <input id="x2Input" class="variableRenamer"
                                 onchange="restrictVariableRename(this)"
@@ -73,7 +74,7 @@
             <input type="checkbox" id="selectedX2" value="?x2" onchange="handleSelectCheckbox(this)">
             </div>
           </div>
-          <div class="variable" id="x3" wdName="?x3" draggable="true" ondragstart="drag(event)" ondblclick="renameVariable(this)" readableName="?x3"  wdType="2" >
+          <div class="variable" id="x3" wdName="?x3" draggable="true" ondragstart="drag(event)" ondblclick="showRenamingTexfield(this)" readableName="?x3" wdType="2" >
             <div id="x3Label">?x3</div>
             <input id="x3Input" class="variableRenamer"
                                 onchange="restrictVariableRename(this)"
@@ -113,7 +114,7 @@
     </div>
       <div class="triple">
         <button class="addTripleButton"
-          onclick="removeEmptyTriples()">SendQuery </button>
+          onclick="prepareAndExecuteSparqlQuery()">SendQuery </button>
       </div>
       <div class="tripleDesc" id="orderButtons" ></div>
       <div class="tripleDesc" id="orderButtonsType" style="display:none;">

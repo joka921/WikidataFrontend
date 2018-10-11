@@ -78,7 +78,7 @@ class SearchServer {
          _server(boost::asio::ip::tcp::v4(), port),
          _acceptor(_ioService, _server), _client(_ioService),
          _timer(_ioService), _whitelist{"search.css", "search.js", "search2.js",
-                                        "search3.js", "search.html"} {}
+                                        "search3.js", "queryHandling.js", "search.html"} {}
 
    // Starts the server loop.
    void run();

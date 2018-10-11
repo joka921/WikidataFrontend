@@ -80,6 +80,7 @@ configure_file(src/web/search.css search.css)
 configure_file(src/web/search.js search.js)
 configure_file(src/web/search2.js search2.js)
 configure_file(src/web/search3.js search3.js)
+configure_file(src/web/queryHandling.js queryHandling.js)
 
 configure_file(examples/Q42.entities examples/Q42.entities)
 configure_file(examples/Q42.desc examples/Q42.desc)
