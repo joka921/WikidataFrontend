@@ -27,9 +27,10 @@ EXPOSE 7001
 VOLUME ["/input"]
 
 ENV INPUT_PREFIX input
+ENV QLEVER_ADDRESS panarea.informatik.privat
+ENV QLEVER_PORT 7001
 # Need the shell to get the INPUT_PREFIX envirionment variable
-ENTRYPOINT ["/bin/sh", "-c", "exec WikidataFrontendMain \"/input/${INPUT_PREFIX}\" 7001 \"$@\"", "--"]
-CMD ["panarea.informatik.privat" "7001"]
+ENTRYPOINT ["/bin/sh", "-c", "exec WikidataFrontendMain \"/input/${INPUT_PREFIX}\" 7001 ${QLEVER_ADDRESS} ${QLEVER_PORT}"]
 
 # docker build -t wikidata-frontend-<name> .
 # # When running with user namespaces you may need to make the input folder accessible
@@ -42,5 +43,5 @@ CMD ["panarea.informatik.privat" "7001"]
 # # (default value is "input")
 
 # # To run a server use
-# docker run -d -p 7001:7001 -e "INPUT_PREFIX=<prefix>" -v "$(pwd)/input:/input" --name wikidata-frontend-<name> wikidata-frontend-<name>
+# docker run -d -p 7001:7001 -e "INPUT_PREFIX=<prefix>" -v "$(pwd)/input:/input" -e "QLEVER_ADDRESS=<ip-of-qlever-server> -e "QLEVER_PORT=<port-of-qlever-server"--name wikidata-frontend-<name> wikidata-frontend-<name>
 
