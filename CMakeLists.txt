@@ -94,6 +94,9 @@ add_subdirectory(test)
 enable_testing()
 add_test(EntityFinderTest test/EntityFinderTest)
 add_test(WikidataEntityTest test/WikidataEntityTest)
+add_test(QLeverCommunicatorTest test/QLeverCommunicatorTest)
+add_test(ServerUtilsTest test/ServerUtilsTest)
+
 
 
 #enable_testing()

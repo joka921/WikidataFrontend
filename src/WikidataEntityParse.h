@@ -56,11 +56,13 @@ class WikidataEntityParse {
 
     // until the next tab we have the number of sitelinks
     auto newpos = line.find("\t", pos + 1);
+    /*
     if (newpos == std::string::npos) {
       std::cerr << "Warning: no tab found after number of sitelinks in entity: \n" << line << "\n The current entity is skipped\n";
       _isValid = false;
       return;
     }
+     */
 
     auto sitelinkString = line.substr(pos + 1, newpos - (pos + 1));
     if (!std::all_of(sitelinkString.begin(), sitelinkString.end(), ::isdigit)) {

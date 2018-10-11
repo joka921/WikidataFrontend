@@ -7,7 +7,9 @@
 #include <string>
 
 #include <gtest/gtest.h>
-#include "./ServerUtils.h"
+#include "../src/ServerUtils.h"
+
+using std::string;
 
 // ________________________________________________________
 TEST(SearchServerUtils, detectContentType) {
@@ -36,11 +38,11 @@ TEST(SearchServerUtils, readFile) {
   auto res = ServerUtils::readFile(filename);
   ASSERT_FALSE(res.first);
 
-  filename = "example.txt";
+  filename = "examples/Q42.desc";
   res = ServerUtils::readFile(filename);
   ASSERT_TRUE(res.first);
-  std::string comp = "Football\t3\t4.0\t4.0\nfoobar\t1\t4.0\t4.0\n";
-  comp.append("Footsal\t2\t4.0\t4.0\nFoot Barca\t1\t4.0\t4.0\n");
+  std::string comp = "British author and humorist (1952\xE2\x80\x93" "2001)\n";
+
 
   ASSERT_STREQ(res.second.c_str(), comp.c_str());
 }
@@ -50,4 +52,24 @@ TEST(SearchServerUtils, decodeURL) {
   ASSERT_STREQ(ServerUtils::decodeURL("L%C3%B8kken").c_str(), "Løkken");
   ASSERT_STREQ(ServerUtils::decodeURL("a+o").c_str(), "a o");
   ASSERT_STREQ(ServerUtils::decodeURL("%C3%A1+%C3%A9").c_str(), "á é");
+}
+
+TEST(SearchServerUtils, parsePrefixSearchQuery) {
+  auto res = ServerUtils::parsePrefixSearchQuery("?t=obj?q=pref");
+  ASSERT_EQ(res.second, SearchMode::Subjects);
+  ASSERT_EQ(string("pref"), res.first);
+
+  res = ServerUtils::parsePrefixSearchQuery("?t=prd?q=pref");
+  ASSERT_EQ(res.second, SearchMode::Properties);
+  ASSERT_EQ(string("pref"), res.first);
+
+  res = ServerUtils::parsePrefixSearchQuery("?t=all?q=pref");
+  ASSERT_EQ(res.second, SearchMode::Subjects);
+  ASSERT_EQ(string("pref"), res.first);
+
+  res = ServerUtils::parsePrefixSearchQuery("?t=allIllformated=pref");
+  ASSERT_EQ(res.second, SearchMode::Invalid);
+
+  res = ServerUtils::parsePrefixSearchQuery("?t=non?q=pref");
+  ASSERT_EQ(res.second, SearchMode::Invalid);
 }

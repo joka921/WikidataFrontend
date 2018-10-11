@@ -127,7 +127,7 @@ std::string SearchServer::createResponse(const std::string& req)
     if (filename.substr(0, 3) == std::string("?t=")) {
       // query request, find matches
       contentType = "application/json";
-      auto parsed = ServerUtils::parseQuery(filename);
+      auto parsed = ServerUtils::parsePrefixSearchQuery(filename);
       //TODO: Implement UTF-8 again
       //auto queryWide = converter.from_bytes(query.c_str());
       
@@ -148,7 +148,7 @@ std::string SearchServer::createResponse(const std::string& req)
     } else if (filename.substr(0, 3) == std::string("?r=")) {
 	      contentType = "application/json";
 	    auto query = filename.substr(3);
-	    contentString = _communicator.GetQueryResult(query, &_finder);
+	    contentString = _communicator.GetQueryResult(query, _finder);
     } else {
     // redirect empty string (start page) to standard file
     if (!filename.length()) filename = "search.html";

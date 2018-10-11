@@ -22,7 +22,7 @@ string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntity>
 }
 
 // ___________________________________________________________________
-std::pair<std::string, SearchMode> ServerUtils::parseQuery(const std::string& query) {
+std::pair<std::string, SearchMode> ServerUtils::parsePrefixSearchQuery(const std::string &query) {
   // we already have checked that string starts with "?t="
   auto searchMode = SearchMode::Invalid;
   // searchtype always has three chars
@@ -65,9 +65,7 @@ std::string ServerUtils::decodeURL(std::string str) {
 }
 
 
-// read the file specified by filename arg and return a
-// pair<bool, string> with
-// <successful?, contentsOfFile>
+// ____________________________________________________________________________
 std::pair<bool, std::string> ServerUtils::readFile(std::string filename) {
   std::ifstream infile(filename.c_str());
   if (!infile.is_open()) {

@@ -1,5 +1,11 @@
-add_executable(EntityFinderTest EntityFinderTest.cpp)
+add_executable(EntityFinderTest EntityFinderTest.cpp )
 target_link_libraries(EntityFinderTest SearchServer gtest_main)
 
 add_executable(WikidataEntityTest WikidataEntityTest.cpp)
 target_link_libraries(WikidataEntityTest gtest_main)
+
+add_executable(ServerUtilsTest ServerUtilsTest.cpp)
+target_link_libraries(ServerUtilsTest SearchServer gtest_main)
+
+add_executable(QLeverCommunicatorTest QLeverCommunicatorTest.cpp)
+target_link_libraries(QLeverCommunicatorTest SearchServer gtest_main)

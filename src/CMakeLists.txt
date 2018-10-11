@@ -4,7 +4,6 @@ add_library(SearchServer
 		ServerUtils.h
             EntityFinder.cpp     
 	    QLeverCommunicator.cpp  SearchServer.cpp  
-	    SearchServerMainTest.cpp
         EntityFinder.h
 	    QLeverCommunicator.h SearchServer.h  
 	    ServerUtils.cpp WikidataEntityParse.h
