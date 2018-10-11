@@ -5,7 +5,7 @@ ENV LC_ALL C.UTF-8
 ENV LC_CTYPE C.UTF-8
 
 FROM base as builder
-RUN apt-get update && apt-get install -y build-essential cmake libboost-all-dev libcurl4-openssl-dev
+RUN apt-get update && apt-get install -y build-essential cmake libboost-system-dev libboost-serialization-dev libcurl4-openssl-dev
 COPY . /app/
 
 
@@ -14,7 +14,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=Release .. && make -j $(nproc)
 
 FROM base as runtime
 WORKDIR /app
-#RUN apt-get update && apt-get install -y
+RUN apt-get update && apt-get install -y libboost-system-dev libboost-serialization-dev libcurl4-openssl-dev
 ARG UID=1000
 RUN groupadd -r wikidata-frontend && useradd --no-log-init -r -u $UID -g wikidata-frontend wikidata-frontend && chown wikidata-frontend:wikidata-frontend /app
 #RUN apt-get update && apt-get install -y bzip2
