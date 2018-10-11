@@ -1,2 +1,5 @@
 add_executable(EntityFinderTest EntityFinderTest.cpp)
 target_link_libraries(EntityFinderTest SearchServer gtest_main)
+
+add_executable(WikidataEntityTest WikidataEntityTest.cpp)
+target_link_libraries(WikidataEntityTest gtest_main)

@@ -6,16 +6,16 @@
 #include <chrono>
 
 // ______________________________________________________________________
-void EntityFinder::InitializeFromTextFile(const std::string& filename) {
+void EntityFinder::InitializeFromTextFile(const std::string& filePrefix) {
 
   // Open the entity and the description file
-  std::ifstream file(filename);
-  std:: string descriptionFilename = filename + ".desc";
+  std::ifstream file(filePrefix + ".entities");
+  std:: string descriptionFilename = filePrefix + ".desc";
   std::ifstream fileDesc(descriptionFilename);
   if (!(file && fileDesc)) {
     std::cerr
-        << "ERROR: either the name file " << filename
-        << " or the description filename " << descriptionFilename
+        << "ERROR: either the name file " << filePrefix
+        << " or the description filePrefix " << descriptionFilename
         << "could not been opened. Search engine will contain no entities.\n";
     return;
   }
@@ -37,6 +37,12 @@ void EntityFinder::InitializeFromTextFile(const std::string& filename) {
     }
     entityShort._description = tempDesc;
 
+    // if we have read an ill-formed entity we skip it here. We still had to read
+    // one line from the description file
+    if (!entity._isValid)
+    {
+      continue;
+    }
     v._entities.push_back(std::move(entityShort));
 
     // push all aliases of the entity and the index of the current entity
@@ -263,9 +269,13 @@ void EntityFinder::SerializeToFile(const std::string &filename) {
 
   std::cout << "Writing to file " << filename << std::endl;
   std::ofstream os(filename, std::ios::binary);
-  boost::archive::binary_oarchive oar(os);
-  oar << *this;
-  std::cout << "Done." << std::endl;
+  if (os) {
+    boost::archive::binary_oarchive oar(os);
+    oar << *this;
+    std::cout << "Done." << std::endl;
+  } else {
+    std::cout << "Warning: could not write binary restart file " << filename << "\n";
+  }
 }
 
 // ______________________________________________________________________________
@@ -301,7 +311,7 @@ EntityFinder EntityFinder::SetupFromFilePrefix(const std::string &prefix) {
   }
 }
 
-std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) const {
+std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) {
 
   // entity has to start with <http...
   static const std::string wd = "<http://www.wikidata.org/";

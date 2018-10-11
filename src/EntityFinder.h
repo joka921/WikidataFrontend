@@ -37,12 +37,15 @@ class EntityFinder {
    // Else we require prefix.entities and prefix.desc files to initialize and
    // afterwards write prefix.preprocessed.dat for faster startup
    static EntityFinder SetupFromFilePrefix(const std::string &prefix);
+   FRIEND_TEST(EntityFinderTest, setupFromFilePrefix);
 
    // Find all entities that match a certain prefix. Must explicitly state if we are
    // searching for Subjects (Q...) or Properties (P...)
    std::vector<WikidataEntity> findEntitiesByPrefix(string prefix,
                                                     SearchMode mode = SearchMode::Subjects);
-   // Convert from <Q42> (internal format) or <www.wikidata.org/..../Q42>
+  FRIEND_TEST(EntityFinderTest, findEntitiesByPrefix);
+
+  // Convert from <Q42> (internal format) or <www.wikidata.org/..../Q42>
    // To the corresponding Wikidata Entity.
    // If no information is found, or the input has another format
    // (e.g. "literal"@en) then only the readable name is set.
@@ -63,18 +66,24 @@ class EntityFinder {
   getIdxFromWdName(const std::string &wdName);
 
   // Construct from file prepared by Preprocessor
-  void InitializeFromTextFile(const std::string &filename);
+  void InitializeFromTextFile(const std::string &filePrefix);
+  FRIEND_TEST(EntityFinderTest, initializeFromTextFile);
+
 
   // Serialize this entity finder to a file with the given filename
+  // If the file can not be opened, nothing is done and a warning is emitted
+  // This method relies only on boost::serialization and thus is not tested
   void SerializeToFile(const std::string &filename);
 
   // Read from a binary file that was created from a
   // previous call to SerializeToFile
+  // This method relies only on boost::serialization and thus is not tested
   static EntityFinder ReadFromSerializedFile(const std::string &filename);
 
   // Helper function: converts <http://wikidata.org...../Q42> to Q42
   // Strings that do not match this pattern are returned without changes.
-  std::string ExtractWikidataIdFromUri(const string& uri) const;
+  static std::string ExtractWikidataIdFromUri(const string& uri);
+  FRIEND_TEST(EntityFinderTest, extractWikidataIdFromUri);
 
   // ______________________________________________________________________
   std::vector<WikidataEntity> convertIdxVecsToSearchResult(const IdxVec &exactIndices,

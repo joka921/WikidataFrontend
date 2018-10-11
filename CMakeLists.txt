@@ -81,6 +81,10 @@ configure_file(src/web/search.js search.js)
 configure_file(src/web/search2.js search2.js)
 configure_file(src/web/search3.js search3.js)
 
+configure_file(examples/Q42.entities examples/Q42.entities)
+configure_file(examples/Q42.desc examples/Q42.desc)
+
+
 
 add_executable(WikidataFrontendMain SearchServerMain.cpp)
 target_link_libraries(WikidataFrontendMain SearchServer
@@ -89,6 +93,7 @@ target_link_libraries(WikidataFrontendMain SearchServer
 add_subdirectory(test)
 enable_testing()
 add_test(EntityFinderTest test/EntityFinderTest)
+add_test(WikidataEntityTest test/WikidataEntityTest)
 
 
 #enable_testing()

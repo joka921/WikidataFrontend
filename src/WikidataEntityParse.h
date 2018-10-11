@@ -38,22 +38,44 @@ class WikidataEntityParse {
   // The first alias is the readable name of this entity
   std::vector<string> _aliases;
   unsigned int _numSiteLinks;
+  bool _isValid = true;
+
   // Read from line of the entity/alias File
   // (see REAME for file type description)
   WikidataEntityParse(const std::string& line) {
     // everything until the first tab is the wikidata name
     auto pos = line.find("\t");
+
+    if (pos == std::string::npos) {
+      std::cerr << "Warning: no tab found after wikidata name in entity: \n" << line << "\n The current entity is skipped\n";
+      _isValid = false;
+      return;
+    }
+
     _wdName = line.substr(0, pos);
 
     // until the next tab we have the number of sitelinks
     auto newpos = line.find("\t", pos + 1);
-    _numSiteLinks = std::stoi(line.substr(pos + 1, newpos - pos));
+    if (newpos == std::string::npos) {
+      std::cerr << "Warning: no tab found after number of sitelinks in entity: \n" << line << "\n The current entity is skipped\n";
+      _isValid = false;
+      return;
+    }
+
+    auto sitelinkString = line.substr(pos + 1, newpos - (pos + 1));
+    if (!std::all_of(sitelinkString.begin(), sitelinkString.end(), ::isdigit)) {
+      std::cerr << "Warning: non-digit character found where we expected the number of sitelinks in entity: \n" << line << "\n The current entity is skipped\n";
+      _isValid = false;
+      return;
+    }
+
+      _numSiteLinks = std::stoi(sitelinkString);
     pos = newpos;
 
     // the rest are aliases (also tab-separated)
     while (newpos != std::string::npos) {
       newpos = line.find("\t", pos + 1);
-      auto alias = line.substr(pos + 1, newpos - pos);
+      auto alias = line.substr(pos + 1, newpos - (pos + 1));
       _aliases.push_back(alias);
       pos = newpos;
     }
@@ -66,7 +88,7 @@ class WikidataEntityParse {
 
 };
 
-// A smaller class for the meta data of a Wikidata entitye
+// A smaller class for the meta data of a Wikidata entity
 // Used for results of searches and queries
 // Does not need the aliases
 class WikidataEntity {
