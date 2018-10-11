@@ -62,7 +62,7 @@ docker run -d -p 7001:7001 -e "INPUT_PREFIX=<prefix>" -v "$(pwd)/input:/input" -
 * Open a webbrowser and go to
 `localhost:7001` (or whichever machine you are running the container on) to access the frontend.
 
-#### Running the Backend Using Docker
+#### Manually Building and Running the Backend With Cmake
 (all steps must be performed inside the repositories main directory)
 * Build the software
 ```
