@@ -12,6 +12,7 @@ When running inside a docker container:
 
 When running as a stand-alone software
 * A Linux system that is able to build C++14 software
+* CMake
 * Development version of the boost libraries (at least `libboost-system-dev` and `libboost-serialization-dev`)
 * Development version of `libcurl`
 
@@ -39,3 +40,42 @@ The *EntityFinder* needs the following files (`<prefix>` can be chosen by the us
   from [here](https://dumps.wikimedia.org/wikidatawiki/entities/). And use the `extractEntities.py` in the main folder of the repository:
   
   ``` python3 extractEntities.py latest-all.json.bz2 <prefix>```
+
+
+#### Running the Backend Using Docker
+(all steps must be performed inside the repositories main directory)
+* Build the Docker Container
+```
+docker build -t wikidata-frontend-<name> .
+```
+* Move your input files `<prefix>.entities` and `<prefix>.desc` to the `input/` subfolder.
+* Make sure that the input folder is accessible from within the container
+```
+chmod -R a+rw ./input
+```
+* Run the Container
+```
+docker run -d -p 7001:7001 -e "INPUT_PREFIX=<prefix>" -v "$(pwd)/input:/input" -e "QLEVER_ADDRESS=<ip-of-qlever-server> -e "QLEVER_PORT=<port-of-qlever-server"--name wikidata-frontend-<name> wikidata-frontend-<name>
+
+```
+* Note: if the address and port of the QLever server are omitted the Entity finder will still work, but you will not be able to execute SPARQL queries
+* Open a webbrowser and go to
+`localhost:7001` (or whichever machine you are running the container on) to access the frontend.
+
+#### Running the Backend Using Docker
+(all steps must be performed inside the repositories main directory)
+* Build the software
+```
+ mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release .. && make -j $(nproc)
+```
+
+* Run the software (we need files `<path-to-prefix>.entities` and `<path-to-prefix>.desc` as described above)
+```
+./WikidataFrontendMain <path-to-prefix> <port> <ip-of-qlever> <port-of-qlever>```
+```
+The two QLever-related arguments must either both be present or both omitted.
+If no QLever server can be reached at this adress you can not perform SPARQL queries.
+
+* Open a webbrowser and go to
+`localhost:7001` (or whichever machine you are running the WikidataFrontend on) to access the frontend.
