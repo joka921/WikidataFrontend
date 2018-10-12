@@ -6,7 +6,7 @@ This repository provides the following functionality:
 * A simple Drag-And-Drop user interface based on the *EntityFinder* that can be used to create and execute simple SPARQL queries on Wikidata using the QLever SPARQL engine.
 
 ## Getting Started
-#### 0. Requirements
+#### Requirements
 When running inside a docker container:
 * docker 18.05 or newer (needs multi-stage builds without leaking files (for End-to-End Tests))
 
@@ -20,8 +20,20 @@ When running as a stand-alone software
 * A running instance of [QLever](https://github.com/ad-freiburg/QLever "QLever Github Repository") using the [Wikidata](https://www.wikidata.org) knowledge base
  (the necessary dumps of Wikidata can be found [here](https://dumps.wikimedia.org/wikidatawiki/entities/))
  
- 
-#### 1. Creating Input Data
+#### Checking Out the Code
+Run
+```
+ git clone --recursive https://github.com/joka921/WikidataFrontend.git
+ ```
+
+Alternatively, if you have an old version of `git` that does not support the `--recursive` flag yet run
+```
+git clone https://github.com/joka921/WikidataFrontend.git
+git submodule init
+git submodule update
+
+```
+####  Creating Input Data
 The *EntityFinder* needs the following files (`<prefix>` can be chosen by the user):
 * A text file `<prefix>.entities` that contains one line for each entity using the folowing format:
 ```
@@ -72,7 +84,7 @@ cmake -DCMAKE_BUILD_TYPE=Release .. && make -j $(nproc)
 
 * Run the software (we need files `<path-to-prefix>.entities` and `<path-to-prefix>.desc` as described above)
 ```
-./WikidataFrontendMain <path-to-prefix> <port> <ip-of-qlever> <port-of-qlever>```
+./WikidataFrontendMain <path-to-prefix> <port> <ip-of-qlever> <port-of-qlever>
 ```
 The two QLever-related arguments must either both be present or both omitted.
 If no QLever server can be reached at this adress you can not perform SPARQL queries.
