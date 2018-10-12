@@ -37,8 +37,8 @@ def entity_generator(infile):
                     data_raw = json.loads(line)
                     data_raw = data_raw["entities"]
                     single_entity = False
-                except json.decoder.JSONDecodeError:
-                    print("error in json decoder, line:")
+                except (json.decoder.JSONDecodeError, KeyError):
+                    print("error in json decoder or decoded JSON, line:")
                     print(line)
                     continue
             if single_entity:
