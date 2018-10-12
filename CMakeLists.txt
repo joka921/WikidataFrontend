@@ -87,7 +87,7 @@ configure_file(examples/Q42.desc examples/Q42.desc)
 
 
 
-add_executable(WikidataFrontendMain SearchServerMain.cpp)
+add_executable(WikidataFrontendMain src/SearchServerMain.cpp)
 target_link_libraries(WikidataFrontendMain SearchServer
   ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} httpclient ${CURL_LIBRARIES})
 

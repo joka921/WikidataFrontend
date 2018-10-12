@@ -7,8 +7,8 @@
 #include <string.h>
 #include <string>
 
-#include "./src/EntityFinder.h"
-#include "./src/SearchServer.h"
+#include "EntityFinder.h"
+#include "SearchServer.h"
 
 // _____________________________________________________________________________
 int main(int argc, char** argv) {
