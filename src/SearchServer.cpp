@@ -1,3 +1,6 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/exception/diagnostic_information.hpp>

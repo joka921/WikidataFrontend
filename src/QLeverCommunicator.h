@@ -1,3 +1,6 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
 #ifndef _QLEVER_COMMUNICATOR_H
 #define _QLEVER_COMMUNICATOR_H
 #include <string>

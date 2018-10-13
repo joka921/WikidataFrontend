@@ -1,3 +1,6 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
 #ifndef _WIKIDATA_ENTITY_H
 #define _WIKIDATA_ENTITY_H
 

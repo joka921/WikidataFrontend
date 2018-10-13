@@ -1,5 +1,5 @@
-// Copyright 2016 Johannes Kalmbach
-// Authors: <johannes.kalmbach@gmail.com>
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
 //
 
 #include <iostream>

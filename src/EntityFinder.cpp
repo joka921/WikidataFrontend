@@ -1,3 +1,7 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
+
 #include "EntityFinder.h"
 
 #include <fstream>

@@ -1,3 +1,6 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
 #include "QLeverCommunicator.h"
 #include <sstream>
 #include <nlohmann/json.hpp>

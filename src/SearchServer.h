@@ -1,7 +1,6 @@
-
-// Copyright 2017, Johannes Kalmbach <johannes.kalmbach@gmail.com>
+// Copyright 2018, Johannes Kalmbach <johannes.kalmbach@gmail.com>
 // Extended and adapted version of a master solution from the information
-// retrieval class written by
+// retrieval lecture written by
 // Claudius Korzen <korzen@cs.uni-freiburg.de>.
 
 #ifndef SEARCHSERVER_H_

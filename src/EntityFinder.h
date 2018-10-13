@@ -1,3 +1,7 @@
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
+//
+
 #ifndef _ENTITY_FINDER_H
 #define _ENTITY_FINDER_H
 

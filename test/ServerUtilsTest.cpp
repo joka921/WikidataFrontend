@@ -1,5 +1,5 @@
-// Copyright 2016 Johannes Kalmbach
-// <johannes.kalmbach@gmail.com
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
 //
 // Test for helper functions of Search server in utils.h
 

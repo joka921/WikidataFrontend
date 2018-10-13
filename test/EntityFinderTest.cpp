@@ -1,5 +1,5 @@
-//
-// Created by johannes on 10.10.18.
+// Copyright 2018 Johannes Kalmbach
+// Author <johannes.kalmbach@gmail.com>
 //
 
 #include <gtest/gtest.h>
