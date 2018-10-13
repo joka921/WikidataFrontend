@@ -8,8 +8,7 @@
 
 using std::string;
 
-TEST(WikidataEntityTest, parsing)
-{
+TEST(WikidataEntityTest, parsing) {
   string line = "<Q43>\t120\tsomeAlias\tsomeOtherAlias";
   auto e = WikidataEntityParse(line);
   ASSERT_TRUE(e._isValid);
@@ -35,4 +34,3 @@ TEST(WikidataEntityTest, parsing)
   e = WikidataEntityParse(line);
   ASSERT_FALSE(e._isValid);
 }
-

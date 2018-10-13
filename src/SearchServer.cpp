@@ -1,14 +1,14 @@
 // Copyright 2018 Johannes Kalmbach
 // Author <johannes.kalmbach@gmail.com>
 //
+#include <algorithm>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/exception/diagnostic_information.hpp>
-#include <algorithm>
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <regex>
+#include <string>
 
 #include "./SearchServer.h"
 //#include "./Util.h"
@@ -17,35 +17,36 @@
 void SearchServer::run() {
   // The main server loop.
   while (true) {
-    try{
-    // Wait for the client.
-    std::cout << "Waiting on port " << _server.port() << " ... " << std::flush;
-    // Make sure that _client is closed, so we get no already open exception
-    _client.close();
-    _acceptor.accept(_client);
-    std::cout << "client connected from "
-        << _client.remote_endpoint().address().to_string() << std::endl;
-
     try {
-      // Set the timeout for the client.
-      _timer.expires_from_now(boost::posix_time::millisec(100));
-      _timer.async_wait(boost::bind(&SearchServer::handleTimeout, this, _1));
+      // Wait for the client.
+      std::cout << "Waiting on port " << _server.port() << " ... "
+                << std::flush;
+      // Make sure that _client is closed, so we get no already open exception
+      _client.close();
+      _acceptor.accept(_client);
+      std::cout << "client connected from "
+                << _client.remote_endpoint().address().to_string() << std::endl;
 
-      // Read only the first line of the request from the client.
-      boost::asio::async_read_until(_client, _requestBuffer,
-          DEFAULT_LINE_DELIMITER,
-          boost::bind(&SearchServer::handleRequest, this, _1));
+      try {
+        // Set the timeout for the client.
+        _timer.expires_from_now(boost::posix_time::millisec(100));
+        _timer.async_wait(boost::bind(&SearchServer::handleTimeout, this, _1));
 
-      _ioService.run();
-      _ioService.reset();
-    } catch (boost::exception& e) {
-      // Socket was close by remote, continue listening
-      std::cout << "WARN: " << boost::diagnostic_information(e) << std::endl;
-      continue;
+        // Read only the first line of the request from the client.
+        boost::asio::async_read_until(
+            _client, _requestBuffer, DEFAULT_LINE_DELIMITER,
+            boost::bind(&SearchServer::handleRequest, this, _1));
+
+        _ioService.run();
+        _ioService.reset();
+      } catch (boost::exception& e) {
+        // Socket was close by remote, continue listening
+        std::cout << "WARN: " << boost::diagnostic_information(e) << std::endl;
+        continue;
+      }
+    } catch (const std::exception& e) {
+      std::cerr << e.what() << std::endl;
     }
-  } catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-  }
   }
 }
 
@@ -95,7 +96,7 @@ void SearchServer::handleRequest(const boost::system::error_code& e) {
 
   // Send the response to the client.
   boost::asio::write(_client, boost::asio::buffer(response),
-      boost::asio::transfer_all());
+                     boost::asio::transfer_all());
 
   // Clear the request buffer.
   _requestBuffer.consume(_requestBuffer.size());
@@ -109,8 +110,7 @@ void SearchServer::handleRequest(const boost::system::error_code& e) {
 }
 
 // _____________________________________________________________________________
-std::string SearchServer::createResponse(const std::string& req)
-   {
+std::string SearchServer::createResponse(const std::string& req) {
   // variables for building HTTP header
   std::string contentString = "";
   std::string contentType = "text/plain";
@@ -131,15 +131,15 @@ std::string SearchServer::createResponse(const std::string& req)
       // query request, find matches
       contentType = "application/json";
       auto parsed = ServerUtils::parsePrefixSearchQuery(filename);
-      //TODO: Implement UTF-8 again
-      //auto queryWide = converter.from_bytes(query.c_str());
-      
+      // TODO: Implement UTF-8 again
+      // auto queryWide = converter.from_bytes(query.c_str());
+
       if (parsed.first.length() == 0 || parsed.second == SearchMode::Invalid) {
-	contentString = "[]";
+        contentString = "[]";
       } else {
-	auto res = _finder.findEntitiesByPrefix(parsed.first, parsed.second);
-       // get at most ten results as JSON
-       contentString = ServerUtils::entitiesToJson(res);
+        auto res = _finder.findEntitiesByPrefix(parsed.first, parsed.second);
+        // get at most ten results as JSON
+        contentString = ServerUtils::entitiesToJson(res);
       }
     } else if (filename.substr(0, 3) == std::string("?c=")) {
       contentType = "application/json";
@@ -147,38 +147,39 @@ std::string SearchServer::createResponse(const std::string& req)
       auto listOfNames = ServerUtils::decodeURL(filename.substr(3));
       std::cout << listOfNames << '\n';
       auto vecOfNames = ServerUtils::split(listOfNames, ' ');
-      contentString = ServerUtils::entitiesToJson(_finder.wdNamesToEntities(vecOfNames));
+      contentString =
+          ServerUtils::entitiesToJson(_finder.wdNamesToEntities(vecOfNames));
     } else if (filename.substr(0, 3) == std::string("?r=")) {
-	      contentType = "application/json";
-	    auto query = filename.substr(3);
-	    contentString = _communicator.GetQueryResult(query, _finder);
+      contentType = "application/json";
+      auto query = filename.substr(3);
+      contentString = _communicator.GetQueryResult(query, _finder);
     } else {
-    // redirect empty string (start page) to standard file
-    if (!filename.length()) filename = "search.html";
-    // match file ending
+      // redirect empty string (start page) to standard file
+      if (!filename.length()) filename = "search.html";
+      // match file ending
       auto pairContentType = ServerUtils::detectContentType(filename);
       contentType = pairContentType.second;
       if (!pairContentType.first) {
-	validReq = false;
-	contentString = "unsupported file type detected";
+        validReq = false;
+        contentString = "unsupported file type detected";
       } else {
-	if (_whitelist.find(filename) != _whitelist.end()) {
-	  auto fileContents = ServerUtils::readFile(filename);
-	  if (!fileContents.first) validReq = false;
-	  contentString = fileContents.second;
-	} else {
-	  contentType = "text/html";
-	  contentStatus = "HTTP/1.1 403 Forbidden";
-	  contentString = "this is forbidden you bad person";
-	}
+        if (_whitelist.find(filename) != _whitelist.end()) {
+          auto fileContents = ServerUtils::readFile(filename);
+          if (!fileContents.first) validReq = false;
+          contentString = fileContents.second;
+        } else {
+          contentType = "text/html";
+          contentStatus = "HTTP/1.1 403 Forbidden";
+          contentString = "this is forbidden you bad person";
+        }
       }
     }
   }
   // if sth. went wrong, send a 404 message. the content string
   // has already been set in this case
   if (!validReq) {
-  contentStatus = "HTTP/1.1 404 File not found";
-  contentType = "text/html";
+    contentStatus = "HTTP/1.1 404 File not found";
+    contentType = "text/html";
   }
 
   // build http response
@@ -193,7 +194,6 @@ std::string SearchServer::createResponse(const std::string& req)
   response.append(contentString);
 
   return response;
-
 }
 
 // _____________________________________________________________________________

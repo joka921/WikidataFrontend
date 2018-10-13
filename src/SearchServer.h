@@ -7,12 +7,11 @@
 #define SEARCHSERVER_H_
 
 #include <boost/asio.hpp>
-#include <regex>
 #include <codecvt>
+#include <regex>
 #include <unordered_set>
 #include "EntityFinder.h"
 #include "QLeverCommunicator.h"
-
 
 // The default HTTP response header.
 const char HTTP_OK_HEADER[] = "HTTP/1.1 200 OK";
@@ -25,29 +24,30 @@ const char DEFAULT_LINE_DELIMITER[] = "\r\n";
 
 // The available content types, per file extensions.
 const std::map<std::string, std::string> CONTENT_TYPES = {
-  { ".html", "text/html" },
-  { ".css", "text/css" },
-  { ".js", "application/javascript" },
-  { ".json", "application/json" },
-  { ".jpg", "image/jpeg" },
-  { ".png", "image/png" }
-};
+    {".html", "text/html"},
+    {".css", "text/css"},
+    {".js", "application/javascript"},
+    {".json", "application/json"},
+    {".jpg", "image/jpeg"},
+    {".png", "image/png"}};
 
 // The available HTTP error responses by status codes.
 const std::map<uint16_t, std::string> HTTP_ERROR_RESPONSES = {
-  { 403, "HTTP/1.1 403 Forbidden\r\n"
-         "Content-type: text/html\r\n"
-         "Content-length: 10\r\n\r\n"
-         "Forbidden." },
-  { 404, "HTTP/1.1 404 Not found\r\n"
-         "Content-type: text/html\r\n"
-         "Content-length: 10\r\n\r\n"
-         "Not found."},
-  { 405, "HTTP/1.1 405 Method Not Allowed\r\n"
-         "Content-type: text/html\r\n"
-         "Content-length: 12\r\n\r\n"
-         "Not allowed." }
-};
+    {403,
+     "HTTP/1.1 403 Forbidden\r\n"
+     "Content-type: text/html\r\n"
+     "Content-length: 10\r\n\r\n"
+     "Forbidden."},
+    {404,
+     "HTTP/1.1 404 Not found\r\n"
+     "Content-type: text/html\r\n"
+     "Content-length: 10\r\n\r\n"
+     "Not found."},
+    {405,
+     "HTTP/1.1 405 Method Not Allowed\r\n"
+     "Content-type: text/html\r\n"
+     "Content-length: 12\r\n\r\n"
+     "Not allowed."}};
 
 // The regex pattern of the first line from a valid HTTP request header.
 const std::regex HTTP_REQUEST_HEADER_REGEX(
@@ -65,22 +65,24 @@ const char DEFAULT_ENTITY_IMAGE_URL[] = "noimage.png";
 // The number of search results to show per default.
 const size_t NUM_ENTITIES_TO_SHOW = 5;
 
-
 // A simple server that handles fuzzy prefix search requests and file requests.
 class SearchServer {
  public:
   // Creates a new search server.
-   SearchServer(EntityFinder &&finder, uint16_t port,
-                const string &qleverServer = "panarea.informatik.privat",
-                uint16_t qleverPort = 7001)
-       : _finder(std::move(finder)), _communicator(qleverServer, qleverPort),
-         _server(boost::asio::ip::tcp::v4(), port),
-         _acceptor(_ioService, _server), _client(_ioService),
-         _timer(_ioService), _whitelist{"search.css", "search.js", "search2.js",
-                                        "search3.js", "queryHandling.js", "search.html"} {}
+  SearchServer(EntityFinder&& finder, uint16_t port,
+               const string& qleverServer = "panarea.informatik.privat",
+               uint16_t qleverPort = 7001)
+      : _finder(std::move(finder)),
+        _communicator(qleverServer, qleverPort),
+        _server(boost::asio::ip::tcp::v4(), port),
+        _acceptor(_ioService, _server),
+        _client(_ioService),
+        _timer(_ioService),
+        _whitelist{"search.css", "search.js",        "search2.js",
+                   "search3.js", "queryHandling.js", "search.html"} {}
 
-   // Starts the server loop.
-   void run();
+  // Starts the server loop.
+  void run();
 
  private:
   // Handles a timeout of the client.
@@ -90,7 +92,7 @@ class SearchServer {
   void handleRequest(const boost::system::error_code& error);
 
   // Creates the HTTP response for the given HTTP request.
-  std::string createResponse(const std::string& request) ;
+  std::string createResponse(const std::string& request);
 
   // Returns the content type of the given file.
   static std::string getContentType(const std::string& fileName);

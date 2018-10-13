@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
-#include "../src/QLeverCommunicator.h"
 #include "../src/EntityFinder.h"
+#include "../src/QLeverCommunicator.h"
 
 using json = nlohmann::json;
 
@@ -39,7 +39,6 @@ TEST(QLeverCommunicatorTest, replaceEntitiesInQLeverResult) {
   ASSERT_EQ(resJson["res"].size(), 1);
   ASSERT_EQ(resJson["res"][0].size(), 1);
   ASSERT_EQ(resJson["res"][0][0]["name"], "directly putting a string here");
-
 
   // now for an actually correct search
   json correctResult;

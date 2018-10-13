@@ -3,7 +3,6 @@
 //
 // Test for helper functions of Search server in utils.h
 
-
 #include <string>
 
 #include <gtest/gtest.h>
@@ -41,8 +40,9 @@ TEST(SearchServerUtils, readFile) {
   filename = "examples/Q42.desc";
   res = ServerUtils::readFile(filename);
   ASSERT_TRUE(res.first);
-  std::string comp = "British author and humorist (1952\xE2\x80\x93" "2001)\n";
-
+  std::string comp =
+      "British author and humorist (1952\xE2\x80\x93"
+      "2001)\n";
 
   ASSERT_STREQ(res.second.c_str(), comp.c_str());
 }

@@ -4,23 +4,23 @@
 #ifndef _ENTITY_SEARCH_RESULT_H
 #define _ENTITY_SEARCH_RESULT_H
 
-#include "WikidataEntityParse.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>
+#include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/serialization/unordered_map.hpp>
+#include "WikidataEntityParse.h"
 
 #include <unordered_map>
 
-enum class SearchMode {
-  Subjects, Properties, Invalid};
+enum class SearchMode { Subjects, Properties, Invalid };
 
 // Helper class for the internal data structure of the EntityFinder.
-// This information is needed twice, once for properties and one for subjects/ objects
+// This information is needed twice, once for properties and one for subjects/
+// objects
 class EntityVectors {
-public:
+ public:
   // All the entities of which we store information.
   std::vector<WikidataEntity> _entities;
   // All the aliases and the index in the _entities member they they refer to
@@ -36,14 +36,14 @@ public:
     _entities.shrink_to_fit();
   }
 
-private:
+ private:
   friend class boost::serialization::access;
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    (void) version;
-    ar &_entities;
-    ar &_entityToIdx;
-    ar &_aliases;
+  void serialize(Archive& ar, const unsigned int version) {
+    (void)version;
+    ar& _entities;
+    ar& _entityToIdx;
+    ar& _aliases;
   }
 };
 

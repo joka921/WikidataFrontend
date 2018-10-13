@@ -3,8 +3,8 @@
 //
 #ifndef _QLEVER_COMMUNICATOR_H
 #define _QLEVER_COMMUNICATOR_H
-#include <string>
 #include <gtest/gtest.h>
+#include <string>
 
 #pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include "HTTPClient.h"
@@ -28,22 +28,25 @@ class QLeverCommunicator {
   std::string getRawQLeverResponse(const std::string& query);
 
   // in a json result from QLever replace the entries by WikidataEntity entries.
-  // Whenever possible we will replace abstract URIs like <http://wikidata.org/entities/Q42>
-  // by information stored in the EntityFinder * finder
-  static std::string replaceEntitiesInQLeverResult(const std::string &jsonFromQLever, const EntityFinder &finder);
+  // Whenever possible we will replace abstract URIs like
+  // <http://wikidata.org/entities/Q42> by information stored in the
+  // EntityFinder * finder
+  static std::string replaceEntitiesInQLeverResult(
+      const std::string& jsonFromQLever, const EntityFinder& finder);
   FRIEND_TEST(QLeverCommunicatorTest, replaceEntitiesInQLeverResult);
 
-  public:
+ public:
   // Constructor
-    QLeverCommunicator(const std::string& serverAddress, unsigned int port);
+  QLeverCommunicator(const std::string& serverAddress, unsigned int port);
 
   // Destructor
-    ~QLeverCommunicator();
+  ~QLeverCommunicator();
 
-    // public interface: send a SPARQL query (argument query) to the QLever backend
-    // and replace the abstract entity URIs in the result by information from
-    // the EntityFinder wherever this is possible
-    std::string GetQueryResult(const std::string &query, const EntityFinder &finder);
+  // public interface: send a SPARQL query (argument query) to the QLever
+  // backend and replace the abstract entity URIs in the result by information
+  // from the EntityFinder wherever this is possible
+  std::string GetQueryResult(const std::string& query,
+                             const EntityFinder& finder);
 };
 
 #endif  // _QLEVER_COMMUNICATOR_H

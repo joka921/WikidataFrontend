@@ -2,9 +2,9 @@
 // Author <johannes.kalmbach@gmail.com>
 //
 
+#include <string.h>
 #include <iostream>
 #include <memory>
-#include <string.h>
 #include <string>
 
 #include "EntityFinder.h"

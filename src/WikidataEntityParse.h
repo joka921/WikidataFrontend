@@ -4,29 +4,28 @@
 #ifndef _WIKIDATA_ENTITY_H
 #define _WIKIDATA_ENTITY_H
 
-#include <iostream>
-#include <nlohmann/json.hpp>
-#include <string>
-#include <vector>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
+#include <iostream>
+#include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
 using std::string;
 using json = nlohmann::json;
 
 // Wikidata has items/subjects (Q42) and Properties(P31)
-enum class EntityType {
-  Subject, Property};
+enum class EntityType { Subject, Property };
 
 // Convert Subject to "Q" and Property to "P"
 inline std::string entityTypeToCharacter(EntityType t) {
   return t == EntityType::Subject ? "Q" : "P";
 }
 // Convert Entity Type to a single digit. Used in the Javascript Frontend
-inline std::string entityTypeToNumeric(const EntityType &t){
+inline std::string entityTypeToNumeric(const EntityType& t) {
   return t == EntityType::Subject ? "0" : "1";
 }
 
@@ -50,7 +49,8 @@ class WikidataEntityParse {
     auto pos = line.find("\t");
 
     if (pos == std::string::npos) {
-      std::cerr << "Warning: no tab found after wikidata name in entity: \n" << line << "\n The current entity is skipped\n";
+      std::cerr << "Warning: no tab found after wikidata name in entity: \n"
+                << line << "\n The current entity is skipped\n";
       _isValid = false;
       return;
     }
@@ -62,12 +62,14 @@ class WikidataEntityParse {
 
     auto sitelinkString = line.substr(pos + 1, newpos - (pos + 1));
     if (!std::all_of(sitelinkString.begin(), sitelinkString.end(), ::isdigit)) {
-      std::cerr << "Warning: non-digit character found where we expected the number of sitelinks in entity: \n" << line << "\n The current entity is skipped\n";
+      std::cerr << "Warning: non-digit character found where we expected the "
+                   "number of sitelinks in entity: \n"
+                << line << "\n The current entity is skipped\n";
       _isValid = false;
       return;
     }
 
-      _numSiteLinks = std::stoi(sitelinkString);
+    _numSiteLinks = std::stoi(sitelinkString);
     pos = newpos;
 
     // the rest are aliases (also tab-separated)
@@ -80,10 +82,9 @@ class WikidataEntityParse {
   }
 
   // _____________________________________
-  static bool isPropertyName(const std::string &name) {
+  static bool isPropertyName(const std::string& name) {
     return name.substr(0, 2) == std::string("<P");
   }
-
 };
 
 // A smaller class for the meta data of a Wikidata entity
@@ -98,9 +99,15 @@ class WikidataEntity {
   EntityType _type;
 
   // Constructor
-  WikidataEntity(const string& wdName, const string& readableName, const string& desc, unsigned int nSitelinks = 0)
-    : _wdName(wdName), _readableName(readableName), _description(desc), _numSitelinks(nSitelinks) {
-    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;}
+  WikidataEntity(const string& wdName, const string& readableName,
+                 const string& desc, unsigned int nSitelinks = 0)
+      : _wdName(wdName),
+        _readableName(readableName),
+        _description(desc),
+        _numSitelinks(nSitelinks) {
+    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property
+                                                         : EntityType::Subject;
+  }
 
   // default constructor needed for resize etc
   WikidataEntity() = default;
@@ -111,29 +118,28 @@ class WikidataEntity {
     _readableName = other._aliases.empty() ? "no name" : other._aliases[0];
     _description = "no description";
     _numSitelinks = other._numSiteLinks;
-    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property : EntityType::Subject;
+    _type = WikidataEntityParse::isPropertyName(_wdName) ? EntityType::Property
+                                                         : EntityType::Subject;
   }
-
 
   // TODO: should probably not be here
-  static int literalToInt(const std::string &str);
+  static int literalToInt(const std::string& str);
 
-private:
+ private:
   friend class boost::serialization::access;
   template <class Archive>
-  void serialize(Archive &ar, const unsigned int version) {
-    (void) version;
-    ar & _wdName;
-    ar &_readableName;
-    ar & _description;
-    ar & _numSitelinks;
-    ar & _type;
+  void serialize(Archive& ar, const unsigned int version) {
+    (void)version;
+    ar& _wdName;
+    ar& _readableName;
+    ar& _description;
+    ar& _numSitelinks;
+    ar& _type;
   }
-
 };
 
 // convert a WikidataEntity to JSON
-inline void to_json(json &j, const WikidataEntity &ent) {
+inline void to_json(json& j, const WikidataEntity& ent) {
   j = json();
   j["wdName"] = ent._wdName;
   j["name"] = ent._readableName;

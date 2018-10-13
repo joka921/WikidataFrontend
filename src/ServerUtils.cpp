@@ -4,28 +4,31 @@
 #include "ServerUtils.h"
 #include "EntityFinder.h"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
 //_____________________________________________________________________________
-string ServerUtils::entitiesToJson(const std::vector<WikidataEntity> &entities) {
+string ServerUtils::entitiesToJson(
+    const std::vector<WikidataEntity>& entities) {
   json j;
   j["entities"] = entities;
   return j.dump();
 }
 // _______________________________________________________________
-string ServerUtils::entitiesToJson(const std::vector<std::vector<WikidataEntity>> &entities) {
+string ServerUtils::entitiesToJson(
+    const std::vector<std::vector<WikidataEntity>>& entities) {
   json j;
   j["entities"] = entities;
   return j.dump();
 }
 
 // ___________________________________________________________________
-std::pair<std::string, SearchMode> ServerUtils::parsePrefixSearchQuery(const std::string &query) {
+std::pair<std::string, SearchMode> ServerUtils::parsePrefixSearchQuery(
+    const std::string& query) {
   // we already have checked that string starts with "?t="
   auto searchMode = SearchMode::Invalid;
   // searchtype always has three chars
@@ -61,19 +64,20 @@ std::string ServerUtils::decodeURL(std::string str) {
         c = hexVal;
         i += 2;
       }
-    } else if (c == '+') { c = ' '; }
+    } else if (c == '+') {
+      c = ' ';
+    }
     decoded += c;
   }
   return decoded;
 }
 
-
 // ____________________________________________________________________________
 std::pair<bool, std::string> ServerUtils::readFile(std::string filename) {
   std::ifstream infile(filename.c_str());
   if (!infile.is_open()) {
-    return std::make_pair(false, std::string(
-        "The requested file does not exist"));
+    return std::make_pair(false,
+                          std::string("The requested file does not exist"));
   } else {
     std::stringstream lineStream;
     lineStream << infile.rdbuf();
@@ -81,11 +85,11 @@ std::pair<bool, std::string> ServerUtils::readFile(std::string filename) {
   }
 }
 
-
 // detect the file ending of the given file name and return the appropriate
 // MIME type. only html, css and js are correct.
 // Returns: pair<bool, string> with <successful?, MIME-type>
-std::pair<bool, std::string> ServerUtils::detectContentType(std::string filename) {
+std::pair<bool, std::string> ServerUtils::detectContentType(
+    std::string filename) {
   // for raghu, search for the end to also parse
   // a.b.c.d.e.f.g.txt
   auto posDot = filename.find_last_of(".");
@@ -99,12 +103,12 @@ std::pair<bool, std::string> ServerUtils::detectContentType(std::string filename
     std::cout << "suffix is " << suffix << std::endl;
     if (suffix == std::string(".txt")) {
       contentType = "text/plain";
-    } else if (suffix == std::string(".html")
-        || suffix == std::string(".htm")) {
+    } else if (suffix == std::string(".html") ||
+               suffix == std::string(".htm")) {
       contentType = "text/html";
-    }  else if (suffix == std::string(".css")) {
+    } else if (suffix == std::string(".css")) {
       contentType = "text/css";
-    }  else if (suffix == std::string(".js")) {
+    } else if (suffix == std::string(".js")) {
       contentType = "application/javascript";
     } else {
       std::cout << "no valid extension" << std::endl;
