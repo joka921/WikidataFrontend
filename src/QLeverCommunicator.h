@@ -30,7 +30,7 @@ class QLeverCommunicator {
   // in a json result from QLever replace the entries by WikidataEntity entries.
   // Whenever possible we will replace abstract URIs like <http://wikidata.org/entities/Q42>
   // by information stored in the EntityFinder * finder
-  std::string replaceEntitiesInQLeverResult(const std::string &jsonFromQLever, const EntityFinder &finder);
+  static std::string replaceEntitiesInQLeverResult(const std::string &jsonFromQLever, const EntityFinder &finder);
   FRIEND_TEST(QLeverCommunicatorTest, replaceEntitiesInQLeverResult);
 
   public:

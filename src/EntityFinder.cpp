@@ -80,7 +80,7 @@ void EntityFinder::InitializeFromTextFile(const std::string& filePrefix) {
 }
 
 // __________________________________________________________________
-std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, SearchMode mode)
+std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, SearchMode mode) const
 {
   std::transform(prefix.begin(), prefix.end(), prefix.begin(), ::tolower);
 
@@ -140,7 +140,7 @@ std::vector<WikidataEntity> EntityFinder::findEntitiesByPrefix(string prefix, Se
 std::vector<WikidataEntity>
 EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
                                            const IdxVec &prefixIndices,
-                                           const EntityVectors &v) {
+                                           const EntityVectors &v) const {
   std::vector<WikidataEntity> ret;
   ret.reserve(_resultsToSend);
   // first the exact matches
@@ -159,7 +159,7 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
  // _______________________________________________________________________
  std::pair<EntityFinder::IdxVec, EntityFinder::IdxVec>
  EntityFinder::rankResults(AliasIt lower, AliasIt upperExact,
-                           AliasIt upperPrefixes, const EntityVectors &v) {
+                           AliasIt upperPrefixes, const EntityVectors &v) const {
    // store <numberOfSitelinks, idx> pairs for exact
    // and prefix matches to make  sorting faster
    IdxVec onlyIdxVec;
@@ -230,7 +230,7 @@ EntityFinder::convertIdxVecsToSearchResult(const IdxVec &exactIndices,
 }
 
 // _______________________________________________________________________________
-std::vector<std::vector<WikidataEntity>> EntityFinder::wdNamesToEntities(const std::vector<std::vector<string>>& wdNames) {
+std::vector<std::vector<WikidataEntity>> EntityFinder::wdNamesToEntities(const std::vector<std::vector<string>>& wdNames) const {
   std::vector<std::vector<WikidataEntity>> res;
   for (const auto& vec : wdNames) {
     res.push_back(wdNamesToEntities(vec));
@@ -239,7 +239,7 @@ std::vector<std::vector<WikidataEntity>> EntityFinder::wdNamesToEntities(const s
 
 }
 // ___________________________________________________________________
-std::vector<WikidataEntity> EntityFinder::wdNamesToEntities(const std::vector<string>& wdNames) {
+std::vector<WikidataEntity> EntityFinder::wdNamesToEntities(const std::vector<string>& wdNames) const {
   std::vector<WikidataEntity> ret;
   for (const auto& el : wdNames) {
     ret.push_back(wdNamesToEntities(el));
@@ -269,7 +269,7 @@ WikidataEntity EntityFinder::wdNamesToEntities(const std::string &in) const {
 }
 
 // ______________________________________________________________________________
-void EntityFinder::SerializeToFile(const std::string &filename) {
+void EntityFinder::SerializeToFile(const std::string &filename) const {
 
   std::cout << "Writing to file " << filename << std::endl;
   std::ofstream os(filename, std::ios::binary);
@@ -344,7 +344,7 @@ std::string EntityFinder::ExtractWikidataIdFromUri(const string& uri) {
 
 // ________________________________________________________________
 template<class Archive>
-void EntityFinder::serialize(Archive& ar, const unsigned int version){
+void EntityFinder::serialize(Archive& ar, const unsigned int version) {
   (void) version;
   ar &_subjectVecs;
   ar &_propertyVecs;

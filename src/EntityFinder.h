@@ -33,7 +33,9 @@ class EntityFinder {
      size_t _idx;
      IdxVecEntry(size_t numLinks, size_t idx): _numSitelinks(numLinks), _idx(idx) {}
    };
+
    using IdxVec = std::vector<IdxVecEntry>;
+   // const iterator to the alias vectors
    using AliasIt =
        std::vector<std::pair<std::string, size_t>>::const_iterator;
 
@@ -46,7 +48,7 @@ class EntityFinder {
    // Find all entities that match a certain prefix. Must explicitly state if we are
    // searching for Subjects (Q...) or Properties (P...)
    std::vector<WikidataEntity> findEntitiesByPrefix(string prefix,
-                                                    SearchMode mode = SearchMode::Subjects);
+                                                    SearchMode mode = SearchMode::Subjects) const;
   FRIEND_TEST(EntityFinderTest, findEntitiesByPrefix);
 
   // Convert from <Q42> (internal format) or <www.wikidata.org/..../Q42>
@@ -54,11 +56,11 @@ class EntityFinder {
    // If no information is found, or the input has another format
    // (e.g. "literal"@en) then only the readable name is set.
    std::vector<std::vector<WikidataEntity>>
-   wdNamesToEntities(const std::vector<std::vector<string>> &wdNames);
+   wdNamesToEntities(const std::vector<std::vector<string>> &wdNames) const;
 
    // overload for not-nested vectors, behaves same as above
    std::vector<WikidataEntity>
-   wdNamesToEntities(const std::vector<string> &wdNames);
+   wdNamesToEntities(const std::vector<string> &wdNames) const;
 
    // overload for single strings. Is used by the other overloads
    WikidataEntity wdNamesToEntities(const std::string &wdNames) const;
@@ -77,7 +79,7 @@ class EntityFinder {
   // Serialize this entity finder to a file with the given filename
   // If the file can not be opened, nothing is done and a warning is emitted
   // This method relies only on boost::serialization and thus is not tested
-  void SerializeToFile(const std::string &filename);
+  void SerializeToFile(const std::string &filename) const;
 
   // Read from a binary file that was created from a
   // previous call to SerializeToFile
@@ -92,7 +94,7 @@ class EntityFinder {
   // ______________________________________________________________________
   std::vector<WikidataEntity> convertIdxVecsToSearchResult(const IdxVec &exactIndices,
                                                               const IdxVec &prefixIndices,
-                                                              const EntityVectors &v);
+                                                              const EntityVectors &v) const;
   FRIEND_TEST(EntityFinderTest, convertIdxVecs);
   // Compute the ranking for the given search results and eliminate duplicates
   // lower is the lower bound iterator for the matches,
@@ -101,7 +103,7 @@ class EntityFinder {
   // Argument v is used to correctly get the number of sitelinks.
   std::pair<IdxVec, IdxVec> rankResults(AliasIt lower, AliasIt upperExact,
                                          AliasIt upperPrefixes,
-                                         const EntityVectors &v);
+                                         const EntityVectors &v) const;
   FRIEND_TEST(EntityFinderTest, rankResults);
   // Number of top results that are actually returned from the findEntitiesByPrefix functions
   size_t _resultsToSend = 40;
