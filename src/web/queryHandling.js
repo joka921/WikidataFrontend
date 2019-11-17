@@ -156,14 +156,14 @@ function determineSettingString(selectedArray) {
             orderVariableName = radioType[i].value;
             if (sortType == 's') {
                 // sorting by number of sitelinks.
-                var sitelinkVar = orderVariableName + "-numLinks";
-                var metaNodeVar = orderVariableName + "-metaNode";
+                var sitelinkVar = orderVariableName + "numLinks";
+                var metaNodeVar = orderVariableName + "metaNode";
                 additionalTriples = " " + metaNodeVar + " wikibase:sitelinks " + sitelinkVar + " . ";
                 additionalTriples += " " + metaNodeVar + " schema:about " + orderVariableName + " . ";
                 modifiedOrderVariableName = sitelinkVar;
             } else if (sortType == 'a') {
                 // sorting by alphabetical value of labels
-                sitelinkVar = orderVariableName + "-label";
+                sitelinkVar = orderVariableName + "label";
                 additionalTriples = " " + orderVariableName + " @en@rdfs:label " + sitelinkVar + " . ";
                 modifiedOrderVariableName = sitelinkVar;
             } else {
