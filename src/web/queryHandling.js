@@ -63,7 +63,7 @@ function prepareAndExecuteSparqlQuery() {
     PREFIX wds: <http://www.wikidata.org/entity/statement/>
     PREFIX wdv: <http://www.wikidata.org/value/>
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-    PREFIX wikibase: <http://wikiba.se/ontology-beta#>
+    PREFIX wikibase: <http://wikiba.se/ontology#>
     PREFIX p: <http://www.wikidata.org/prop/>
     PREFIX ps: <http://www.wikidata.org/prop/statement/>
     PREFIX pq: <http://www.wikidata.org/prop/qualifier/>
